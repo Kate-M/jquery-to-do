@@ -4,6 +4,21 @@
     align-items: stretch;
     position: relative;
     flex-wrap: wrap;
+    width: 100%;
+    @media screen and (max-width: 767px) {
+        display: none;
+        position: absolute;
+        top:0;
+        left: 0;
+        transition: transform .3s;
+        padding: 0 20px;
+        background: $color_white;
+        z-index: 2;
+    }
+    &.open {
+        transition: transform .3s;
+        display: flex;
+    }
     .error {
         position: absolute;
         left: 0;

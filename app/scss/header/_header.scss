@@ -1,7 +1,9 @@
 header {
     background: $color_main;
     padding: 20px 0;
-
+    @media screen and (max-width: 767px) {
+        padding: 10px 0;
+    }
     .title {
         display: flex;
         justify-content: space-between;
@@ -12,8 +14,16 @@ header {
         color:$color_secondary;
     
     }
+    .menu-btn {
+        display: none;
+        @media screen and (max-width: 767px) {
+            display: block;
+            cursor: pointer;
+        }
+    }
     .icon {
         .material-icons{
+            user-select: none;
             color:#EEFAF9;
             font-size: 3.5rem;
             border-radius:50%;

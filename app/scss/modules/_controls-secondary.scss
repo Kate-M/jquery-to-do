@@ -1,0 +1,27 @@
+.controls-task-secondary {
+    position: fixed;
+    width:100%;
+    left:0;
+    bottom:90px;
+    transition: all .1s;
+    @media screen and (max-width: 767px) {
+        bottom:60px;
+    }
+    &.fixed {
+        bottom:0;
+        transition: all .1s;
+        padding-bottom: 5px;
+    }
+    .btn-group {
+        align-items: flex-end;
+        flex-direction: column;
+        .btn-lg {
+            margin-top: 10px;
+            margin-right: 0;
+        }
+        @media screen and (max-width: 767px) {
+            justify-content: space-between;
+            flex-direction: row;
+         }
+    }
+}
