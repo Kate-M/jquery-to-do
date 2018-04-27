@@ -71,6 +71,157 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/js/constant.js":
+/*!****************************!*\
+  !*** ./app/js/constant.js ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var TASK_AREA = $("#tasks-container");
+var STATUS = {
+    default: 0,
+    processing: 1,
+    completed: 2
+};
+
+exports.TASK_AREA = TASK_AREA;
+exports.STATUS = STATUS;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
+/***/ "./app/js/controller.js":
+/*!******************************!*\
+  !*** ./app/js/controller.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.taskManager = exports.sendTaskInLocalDB = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
+
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var TaskManager = function () {
+    function TaskManager() {
+        _classCallCheck(this, TaskManager);
+
+        this.tasksList = [];
+    }
+
+    _createClass(TaskManager, [{
+        key: 'init',
+        value: function init() {
+            if (typeof Storage !== "undefined") {
+                if (localStorage.getItem('tasksDB')) {
+                    this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                    this.tasksList.forEach(function (el) {
+                        return (0, _dom.drawTask)(el.id, el.name, el.status);
+                    });
+                }
+            } else {
+                console.log('Sorry! No Web Storage support');
+            }
+            (0, _index.startEvents)();
+        }
+    }, {
+        key: 'add',
+        value: function add(item) {
+            this.tasksList.push(item);
+            sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'save',
+        value: function save() {
+            sendTaskInLocalDB(this.tasksList);
+        }
+    }]);
+
+    return TaskManager;
+}();
+
+var taskManager = new TaskManager();
+
+function sendTaskInLocalDB(tasksList) {
+    var serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
+}
+
+exports.sendTaskInLocalDB = sendTaskInLocalDB;
+exports.taskManager = taskManager;
+
+/***/ }),
+
+/***/ "./app/js/dom.js":
+/*!***********************!*\
+  !*** ./app/js/dom.js ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.drawTask = exports.initElements = undefined;
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+function initElements() {
+    (function () {
+        $(window).scroll(appearanceButton);
+        function appearanceButton() {
+            var heidthFooter = $('footer').outerHeight();
+            var scrollHeight = $(document).height() - heidthFooter;
+            var scrollPosition = $(window).height() + $(window).scrollTop();
+
+            if (Math.round(scrollPosition) >= scrollHeight) {
+                $('section.controls-task-secondary').removeClass('fixed');
+            } else {
+                $('section.controls-task-secondary').addClass('fixed');
+            }
+        }
+    })();
+
+    $('.menu-btn').click(function () {
+        $('.controls-task-main').toggleClass('open');
+    });
+}
+
+function drawTask(id, name, status) {
+    var newTask = document.createElement('div');
+    newTask.setAttribute('class', 'tasks-wrap');
+    _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
+
+    newTask.html = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+}
+
+exports.initElements = initElements;
+exports.drawTask = drawTask;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
 /***/ "./app/js/index.js":
 /*!*************************!*\
   !*** ./app/js/index.js ***!
@@ -81,27 +232,78 @@
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
-var he = $('main').height();
-// console.log(he)
-
-(function () {
-    $(window).scroll(appearanceButton);
-    function appearanceButton() {
-        var heidthFooter = $('footer').outerHeight();
-        var scrollHeight = $(document).height() - heidthFooter;
-        var scrollPosition = $(window).height() + $(window).scrollTop();
-
-        if (Math.round(scrollPosition) >= scrollHeight) {
-            $('section.controls-task-secondary').removeClass('fixed');
-        } else {
-            $('section.controls-task-secondary').addClass('fixed');
-        }
-    }
-})();
-
-$('.menu-btn').click(function () {
-    $('.controls-task-main').toggleClass('open');
+Object.defineProperty(exports, "__esModule", {
+    value: true
 });
+exports.startEvents = startEvents;
+
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
+
+var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
+
+(0, _dom.initElements)();
+
+function startEvents() {
+    $('#add-task').on('click', _taskLogic.createNewTasks);
+}
+
+document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
+/***/ "./app/js/task-logic.js":
+/*!******************************!*\
+  !*** ./app/js/task-logic.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createNewTasks = undefined;
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
+
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+
+var errorField = $('.error');
+var addFied = $('.add-field');
+
+function createNewTasks(evnt) {
+    evnt.preventDefault();
+    clearField(errorField);
+    var taskName = $.trim($('.add-field').val());
+    if (!taskName) {
+        errorField.html = "Invalid value";
+    } else {
+        var taskId = new Date().valueOf() + '_' + taskName;
+        _controller.taskManager.add({
+            status: _constant.STATUS.default,
+            id: taskId,
+            name: taskName
+        });
+        $('.add-field').value = '';
+
+        (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
+    }
+}
+
+function clearField(field) {
+    field.html = '';
+}
+
+exports.createNewTasks = createNewTasks;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
