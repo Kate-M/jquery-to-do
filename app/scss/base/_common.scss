@@ -64,6 +64,7 @@ button {
     background: transparent;
     letter-spacing: 0.4px;
     line-height: 1;
+    user-select: none;
     &:focus,&:active  {
       appearance: none;
       outline:none;

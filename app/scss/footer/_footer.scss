@@ -3,6 +3,9 @@ footer {
     color:$color_white;
     padding: 30px;
     font-size: 1.2rem;
+    @media screen and (max-width: 767px) {
+        padding: 15px 0;
+    }
     .copyright {
         display: flex;
         justify-content: space-between;

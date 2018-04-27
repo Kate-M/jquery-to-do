@@ -1,13 +1,78 @@
 .tasks-container {
     width: 50%;
+    padding: 35px 0;
     @media screen and (max-width: 767px) {
         width: 100%;
+        padding: 0 0 35px;
     }
 }    
 .tasks-wrap {
     
     &:not(:last-child) {
         margin-bottom: 10px;
+    }
+}
+.task-form {
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #e7e7e7;
+    background: #F4F4F4;
+    border-radius: 3px;
+}
+.btn-status {
+    @include button-color(#FAC174);
+    &::after {
+        content: '\e905';
+    }
+}
+.btn-edit {
+    @include button-color(#27A4DE);
+    &::after {
+        content: '\e903';
+    }
+}
+.btn-delete-item {
+    @include button-color(#F1646C);
+    &::after {
+        content: '\e904';
+    }
+}
+.btn-save {
+    @include button-color(#9ED5C0);
+    display: none;
+    &::after {
+        content: '\e902';
+    }    
+}
+.btn-cancel {
+    @include button-color(#27A4DE);
+    display: none;
+    &::after {
+        content: '\e901';
+        font: {
+            size: 1.2rem;
+            weight: bold;
+        }
+    }
+}
+
+.btn-status {
+    opacity: 1;
+}
+.btn-status[data-status = '0'],
+.btn-status[data-status = '2'] {
+    opacity: .3;
+    &:hover {
+        opacity: .8;
+    }
+}
+
+.btn-status-complete[checked="true"]+.name-field {
+    text-decoration: line-through;
+}
+.complete {
+    .btn-status {
+        display: none;
     }
 }
 .btn-status-complete {
@@ -43,14 +108,26 @@
     align-items: center;
     display: inline-flex;
     vertical-align: middle;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-y: auto;
     max-width: 185px;
     @media screen and (max-width: 767px) {
         max-width: 77px;
     }
 }
+.task-content {
 
+}
+.task-info {
+    display: inline-block;
+}
+.date-area {
+    color:$color_secondary;
+    padding: 5px 0;
+    font: {
+        style: italic;
+        size: 1rem;
+    }
+}
 .edit-name-field {
     display: none;
 }
@@ -61,7 +138,7 @@
     .edit-name-field, .btn-save, .btn-cancel {
         display: flex;
     }
-    .status-btn, .name-field,.btn-status, .btn-edit, .btn-delete-item, .btn-status-complete {
+    .name-field, .task-info, .btn-status, .btn-edit, .btn-delete-item, .btn-status-complete {
         display: none;
     }
 }
