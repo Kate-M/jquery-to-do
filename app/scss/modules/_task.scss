@@ -1,0 +1,67 @@
+.tasks-container {
+    width: 50%;
+    @media screen and (max-width: 767px) {
+        width: 100%;
+    }
+}    
+.tasks-wrap {
+    
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
+}
+.btn-status-complete {
+    width: 13px;
+    height: 13px;
+    border: 1px solid #E7E7E7;
+    background: $color_white;
+    margin-right: 10px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    &[checked="true"] {
+        border: 1px solid #9ED5C0;
+        &:after {
+            content: '\e909';
+            display: block;
+            color:#9ED5C0;
+            position: absolute;
+            top: 0;
+            left:0;
+            font: {
+                size: 1.2rem;
+                family: $font_ico;
+                weight: bold;
+            }
+                
+        }
+    }
+}
+.name-field {
+    border:0;
+    align-items: center;
+    display: inline-flex;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 185px;
+    @media screen and (max-width: 767px) {
+        max-width: 77px;
+    }
+}
+
+.edit-name-field {
+    display: none;
+}
+.edit-mode {
+    .field {
+        width: 100%;
+    }
+    .edit-name-field, .btn-save, .btn-cancel {
+        display: flex;
+    }
+    .status-btn, .name-field,.btn-status, .btn-edit, .btn-delete-item, .btn-status-complete {
+        display: none;
+    }
+}

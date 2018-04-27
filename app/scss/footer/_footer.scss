@@ -1,0 +1,10 @@
+footer {
+    background: $color_secondary;
+    color:$color_white;
+    padding: 30px;
+    font-size: 1.2rem;
+    .copyright {
+        display: flex;
+        justify-content: space-between;
+    }
+}

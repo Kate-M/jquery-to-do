@@ -1,0 +1,119 @@
+.controls-task-main{
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    position: relative;
+    flex-wrap: wrap;
+    .error {
+        position: absolute;
+        left: 0;
+        top: -30px;
+        width: 100%;
+        text-align: center;
+        color:#F1646C;
+    }
+    .control-item {
+        height: 35px;
+        @media screen and (max-width: 767px) {
+            width:100%;
+        }
+        &:not(:last-child){
+            @media screen and (max-width: 767px) {
+                margin-bottom: 10px;
+            }
+        }
+    }
+    @media screen and (max-width: 767px) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .field-wrap{
+        @media screen and (max-width: 767px) {
+            width:100%;
+        }
+    }
+    input {
+        min-width: 200px;
+        height: 100%;
+        border: 1px solid #E7E7E7;
+        border-right: 0;
+        padding: 0 5px;
+        border-radius:  3px 0 0 3px;
+        @media screen and (max-width: 767px) {
+            width:100%;
+        }
+    }
+    .add-btn {
+        &::after {
+            content: '\e908';
+        }
+    }
+    .search-btn {
+        &::after {
+            content: '\e906';
+        }
+    }
+}
+.filter-task.open {
+    .filter-select{
+        display: block;
+        overflow: hidden;
+    }
+}
+.filter-task {
+    cursor: pointer;
+    min-width: 215px;
+    text-transform: uppercase;
+    position: relative;
+    border-radius: 3px;
+    .filter-btn {
+        @include center-x;
+        position: relative;
+        padding: 0 5px;
+        height: 100%;
+        border-radius: 3px;
+        background: #e7e7e7;
+        &::after {
+            @include center-all;
+            content: '\e907';
+            position: absolute;
+            top:0;
+            right: 0;
+            height: 100%;
+            padding-right: 10px;
+            font: {
+                size: 1.4rem;
+                family: $font_ico;
+            }
+        }
+    }
+    .filter-select {
+        background: $color_white;
+        display: none;
+        position: absolute;
+        top:0;
+        left: 0;
+        width: 100%;
+        border-top:0;
+        margin-top:36px;
+        z-index: 2;
+        background: #ECEBEB;
+    }
+    .filter-option {
+        @include center-x;
+        padding:5px 10px;
+        height: 35px;
+        &:hover {
+            background:#E3DFE4;
+        }
+    }
+}
+.reset-search {
+    display: none;
+    margin-top:20px;
+    width: 100%;
+    justify-content: center;
+    &.open {
+        display: flex;
+    }
+}

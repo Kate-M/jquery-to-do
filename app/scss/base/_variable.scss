@@ -1,0 +1,12 @@
+$color_white:#ffffff;
+$color_black:#000000;
+$color_purple: #736477;
+$color_turquoise:#C2EFEB;
+
+$color_main:$color_turquoise;
+$color_secondary:$color_purple;
+
+$color_main_80:transparentize($color_main,.2);
+
+$font_OSR: 'Oswald-Regular', sans-serif;
+$font_ico: 'icomoon';

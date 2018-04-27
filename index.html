@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Todo list</title>
+    <link href="dist/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <header>
+            <div class="container">
+                <div class="title">
+                    <a href="">
+                        <h1>ToDo List</h1>
+                    </a>
+                    <span class="icon">
+                        <i class="material-icons">subject</i>
+                    </span>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="container">
+                <section class="controls-task-main">
+                    <div class="control-item add-task">
+                        <form action="smth" class="form add-form">
+                            <fieldset class="field-wrap">
+                                <input type="text" class="add-field" placeholder="Add a task">
+                            </fieldset>
+                            <button class="btn btn-md add-btn" id="add-task"></button>
+                        </form>
+                    </div>
+                    <div class="control-item search-task">
+                        <form action="" class="form search-form">
+                            <fieldset class="field-wrap">
+                                <input type="text" class="search-field" id="search-field" placeholder="Search">
+                            </fieldset>
+                            <button class="btn btn-md search-btn" id="search-btn"></button>
+                        </form>
+                    </div>
+                    <div class="control-item filter-task">
+                        <a class="filter-btn">
+                            <span class="filter-active">All</span>
+                        </a>
+                        <ul class="filter-select">
+                            <li class="filter-item">
+                                <a href="" class="filter-option filter-all" data-filter="filter-all">All</a>
+                            </li>
+                            <li class="filter-item">
+                                <a href="" class="filter-option filter-in" data-filter="filter-in-progress">In progress</a>
+                            </li>
+                            <li class="filter-item">
+                                <a href="" class="filter-option filter-compl" data-filter="filter-complete">Complete</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="control-item reset-search">
+                        <button class="btn btn-lg reset-btn" id="reset-search-btn">Reset search</button>
+                    </div>
+                    <p class="error"></p>
+                </section>
+                <section id="tasks-container" class="tasks-container"></section>
+                <section class="controls-task-secondary">
+                    <buton class="btn-group">
+                        <button class="btn btn-lg" id="btn-remove-completed">
+                            Remove completed
+                        </button>
+                        <button class="btn btn-lg" id="btn-remove-all">
+                            Remove all
+                        </button>
+                    </buton>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <div class="container">
+                <div class="copyright">
+                    <h5>Kate-M</h5>
+                    <h6>&copy;2018 All rights are not reserved</h6>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <script src="http://localhost:35729/livereload.js"></script>
+    <script type="text/javascript" src="dist/js/script.js"></script>
+</body>
+
+</html>
