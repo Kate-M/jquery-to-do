@@ -134,13 +134,20 @@ var TaskManager = function () {
                 if (localStorage.getItem('tasksDB')) {
                     this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
                     $.each(this.tasksList, function (index, el) {
-                        return (0, _dom.drawTask)(el.id, el.name, el.status, el.date);
+                        return (0, _dom.drawTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                     });
                 }
             } else {
                 console.log('Sorry! No Web Storage support');
             }
             (0, _index.startEvents)();
+        }
+    }, {
+        key: 'get',
+        value: function get(id) {
+            return this.tasksList.filter(function (el, index, array) {
+                return el.id == id;
+            })[0];
         }
     }, {
         key: 'add',
@@ -232,9 +239,9 @@ function initElements() {
     });
 }
 
-function drawTask(id, name, status, date) {
+function drawTask(id, name, status, date, dateEdit) {
     var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + ' <span class="date-edit"></span></p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
     newTask.html(createForm);
     _constant.$TASK_AREA.prepend(newTask);
 }
@@ -282,15 +289,20 @@ function startEvents() {
         var targetForm = targetElement.parents('form');
         var targetContainer = targetForm.parent();
         var targetTaskId = targetForm.find('.name-field').attr('data-id');
+        var targetTaskName = targetForm.find('.name-field').html();
+
         switch (targetButton) {
             case 'delete-task':
                 (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
                 break;
             case 'edit-task':
-                (0, _taskLogic.editTask)(targetForm);
+                (0, _taskLogic.editTask)(targetForm, targetTaskName);
                 break;
             case 'cancel-task':
                 (0, _taskLogic.cancelTask)(targetForm);
+                break;
+            case 'save-task':
+                (0, _taskLogic.saveTask)(targetForm, targetTaskId, targetTaskName);
                 break;
             default:
                 console.log('other');
@@ -315,7 +327,7 @@ function startEvents() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.cancelTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.saveTask = exports.cancelTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -326,56 +338,84 @@ var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
 var errorAddField = $('.error-add');
-var addFied = $('.add-field');
+var addField = $('.add-field');
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     clearField(errorAddField);
-    var taskName = $.trim(addFied.val());
+    var taskName = $.trim(addField.val());
     if (!taskName) {
         errorAddField.html("Invalid value");
     } else {
         var taskId = new Date().valueOf() + '_' + taskName;
-
-        var date = new Date();
-        var twoDigitMonth = date.getMonth() + '';
-        if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
-        var twoDigitDay = date.getDate() + '';
-        if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
-        var taskDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
-
+        var taskDate = getDate();
         _controller.taskManager.add({
             status: _constant.STATUS.default,
             id: taskId,
             name: taskName,
             date: taskDate
         });
-        addFied.val('');
+        addField.val('');
         (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default, taskDate);
     }
-}
+};
 
 function deleteTask(id, container) {
     container.remove();
     _controller.taskManager.delete(id);
 };
 
-function editTask(form) {
+function editTask(form, name) {
     form.addClass('edit-mode');
-}
+    var labelTask = form.find('.edit-name-field').val(name);
+};
 
 function cancelTask(form) {
     form.removeClass('edit-mode');
 };
 
+function saveTask(form, id, name) {
+    var newTaskName = $.trim(form.find('.edit-name-field').val());
+    var task = _controller.taskManager.get(id);
+    var labelTask = form.find('.name-field');
+
+    if (newTaskName != '') {
+        task.name = newTaskName;
+        labelTask.html(newTaskName);
+        task.dateEdit = getDate();
+        _controller.taskManager.save();
+        var dateEditArea = form.find('.date-edit');
+        var dateEditContent = 'last edited ' + task.dateEdit;
+
+        if (dateEditArea.length == 0) {
+            form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
+        } else {
+            dateEditArea.html(dateEditContent);
+        }
+    }
+
+    form.removeClass('edit-mode');
+};
+
+function getDate() {
+    var date = new Date();
+    var twoDigitMonth = date.getMonth() + '';
+    if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
+    var twoDigitDay = date.getDate() + '';
+    if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
+    var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+    return currentDate;
+};
+
 function clearField(field) {
     field.html('');
-}
+};
 
 exports.createNewTasks = createNewTasks;
 exports.deleteTask = deleteTask;
 exports.editTask = editTask;
 exports.cancelTask = cancelTask;
+exports.saveTask = saveTask;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),

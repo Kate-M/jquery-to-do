@@ -11,13 +11,18 @@ class TaskManager {
             if (localStorage.getItem('tasksDB')) {
                 this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
                 $.each(this.tasksList,
-                    (index, el) => drawTask(el.id,el.name, el.status, el.date)
+                    (index, el) => drawTask(el.id,el.name, el.status, el.date, el.dateEdit)
                 );
             }
         } else {
             console.log('Sorry! No Web Storage support');
         }
         startEvents();
+    }
+    
+    get(id) {
+        return this.tasksList.filter((el, index, array) =>
+            el.id == id)[0];
     }
 
     add(item) {

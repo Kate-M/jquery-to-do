@@ -4,7 +4,8 @@ import {
     createNewTasks,
     deleteTask,
     editTask,
-    cancelTask
+    cancelTask,
+    saveTask
 } from './task-logic';
 import { initElements } from './dom';
 
@@ -25,16 +26,23 @@ export function startEvents() {
             let targetTaskId = targetForm
             .find('.name-field')
             .attr('data-id');
+            let targetTaskName = targetForm
+            .find('.name-field')
+            .html();
+
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId, targetContainer);
                     break;
                 case 'edit-task':
-                    editTask(targetForm);
+                    editTask(targetForm, targetTaskName);
                     break;
                 case 'cancel-task':
                     cancelTask(targetForm);
-                    break;        
+                    break;
+                case 'save-task':
+                    saveTask(targetForm, targetTaskId, targetTaskName);
+                    break;            
                 default:
                     console.log('other');
                     break;

@@ -37,7 +37,7 @@ function initElements() {
     });
 }
 
-function drawTask(id, name, status, date) {
+function drawTask(id, name, status, date, dateEdit) {
     let newTask = $('<div class="tasks-wrap"></div>');
     let createForm =
         $(`<form action="smth" class="form task-form">
@@ -46,9 +46,9 @@ function drawTask(id, name, status, date) {
                     <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="${status == STATUS.completed}">
                     <p class="field name-field" data-id="${id}">${name}</p>
                     </div>
-                <input type="text" class="field edit-name-field" data-id="${id}" value="${name}">
+                <input type="text" class="field edit-name-field" data-id="${id}">
                 <div class="task-info">
-                    <p class="date-area" data-date="12.05.2020">${date} <span class="date-edit"></span></p>
+                    <p class="date-area" data-date="12.05.2020">${date}  ${dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : ''}</p>
                 </div>
                 </fieldset>
             <div class="btn-group">
