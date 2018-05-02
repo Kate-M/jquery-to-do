@@ -33,10 +33,16 @@ function createNewTasks(evnt) {
     }
 }
 
+function deleteTask(id, container) {
+        container.remove();
+        taskManager.delete(id);
+};
+
 function clearField(field) {
     field.html('');
 }
 
 export {
     createNewTasks,
+    deleteTask
 };

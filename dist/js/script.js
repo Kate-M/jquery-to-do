@@ -153,6 +153,14 @@ var TaskManager = function () {
         value: function save() {
             sendTaskInLocalDB(this.tasksList);
         }
+    }, {
+        key: 'delete',
+        value: function _delete(id) {
+            this.tasksList = this.tasksList.filter(function (i) {
+                return i.id != id;
+            });
+            sendTaskInLocalDB(this.tasksList);
+        }
     }]);
 
     return TaskManager;
@@ -197,26 +205,24 @@ function initElements() {
 
         startPositionButton();
 
-        $(window).change(startPositionButton);
+        $(window).bind("DOMSubtreeModified", startPositionButton);
         $(window).scroll(appearanceButton);
 
         function startPositionButton() {
             var heightMain = $('main').outerHeight();
-            var commonHeight = Math.round(heightMain + heightHeader + heightFooter);
-            setButtonPosition(windowHeight, commonHeight);
+            var commonHeight = Math.round(heightMain + heightHeader);
+            if (windowHeight >= commonHeight) {
+                return $('section.controls-task-secondary').removeClass('fixed');
+            }
         };
 
         function appearanceButton() {
             var scrollHeight = $(document).height() - heightFooter;
             var scrollPosition = Math.round($(window).height() + $(window).scrollTop());
-            setButtonPosition(scrollPosition, scrollHeight);
-        }
-
-        function setButtonPosition(a, b) {
-            if (a >= b) {
-                $('section.controls-task-secondary').removeClass('fixed');
+            if (scrollPosition >= scrollHeight) {
+                return $('section.controls-task-secondary').removeClass('fixed');
             } else {
-                $('section.controls-task-secondary').addClass('fixed');
+                return $('section.controls-task-secondary').addClass('fixed');
             }
         }
     })();
@@ -269,6 +275,22 @@ $(document).ready(function () {
 
 function startEvents() {
     $('#add-task').on('click', _taskLogic.createNewTasks);
+    $('#tasks-container').on('click', function (evnt) {
+        evnt.preventDefault();
+        var targetElement = $(evnt.target);
+        var targetButton = targetElement.attr('data-state');
+        var targetForm = targetElement.parents('form');
+        var targetContainer = targetForm.parent();
+        var targetTaskId = targetForm.find('.name-field').attr('data-id');
+        switch (targetButton) {
+            case 'delete-task':
+                (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
+                break;
+            default:
+                console.log('other');
+                break;
+        }
+    });
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
@@ -287,7 +309,7 @@ function startEvents() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.createNewTasks = undefined;
+exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -327,11 +349,17 @@ function createNewTasks(evnt) {
     }
 }
 
+function deleteTask(id, container) {
+    container.remove();
+    _controller.taskManager.delete(id);
+};
+
 function clearField(field) {
     field.html('');
 }
 
 exports.createNewTasks = createNewTasks;
+exports.deleteTask = deleteTask;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),

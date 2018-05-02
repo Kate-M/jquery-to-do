@@ -1,7 +1,7 @@
 import { STATUS, $TASK_AREA } from './constant';
 
 function initElements() {
-    
+
 
     (function () {
         let windowHeight = $(window).height();
@@ -10,26 +10,24 @@ function initElements() {
 
         startPositionButton();
 
-        $(window).change(startPositionButton);
+        $(window).bind("DOMSubtreeModified", startPositionButton);
         $(window).scroll(appearanceButton);
 
         function startPositionButton() {
             let heightMain = $('main').outerHeight();
-            let commonHeight = Math.round(heightMain + heightHeader + heightFooter); 
-            setButtonPosition(windowHeight, commonHeight);
+            let commonHeight = Math.round(heightMain + heightHeader);
+            if (windowHeight >= commonHeight) {
+                return $('section.controls-task-secondary').removeClass('fixed');
+            }
         };
 
         function appearanceButton() {
             let scrollHeight = $(document).height() - heightFooter;
             let scrollPosition = Math.round($(window).height() + $(window).scrollTop());
-            setButtonPosition(scrollPosition, scrollHeight);
-        }
-
-        function setButtonPosition(a, b) {
-            if(a >= b){
-                $('section.controls-task-secondary').removeClass('fixed');
+            if (scrollPosition >= scrollHeight) {
+                return $('section.controls-task-secondary').removeClass('fixed');
             } else {
-                $('section.controls-task-secondary').addClass('fixed');
+                return $('section.controls-task-secondary').addClass('fixed');
             }
         }
     })();
