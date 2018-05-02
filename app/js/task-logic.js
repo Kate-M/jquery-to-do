@@ -38,11 +38,21 @@ function deleteTask(id, container) {
         taskManager.delete(id);
 };
 
+function editTask(form) {
+    form.addClass('edit-mode');
+}
+
+function cancelTask(form) {
+    form.removeClass('edit-mode');
+};
+
 function clearField(field) {
     field.html('');
 }
 
 export {
     createNewTasks,
-    deleteTask
+    deleteTask,
+    editTask,
+    cancelTask
 };

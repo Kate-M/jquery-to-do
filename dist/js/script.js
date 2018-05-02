@@ -234,7 +234,7 @@ function initElements() {
 
 function drawTask(id, name, status, date) {
     var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '</p>\n                </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + ' <span class="date-edit"></span></p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
     newTask.html(createForm);
     _constant.$TASK_AREA.prepend(newTask);
 }
@@ -286,6 +286,12 @@ function startEvents() {
             case 'delete-task':
                 (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
                 break;
+            case 'edit-task':
+                (0, _taskLogic.editTask)(targetForm);
+                break;
+            case 'cancel-task':
+                (0, _taskLogic.cancelTask)(targetForm);
+                break;
             default:
                 console.log('other');
                 break;
@@ -309,7 +315,7 @@ function startEvents() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.deleteTask = exports.createNewTasks = undefined;
+exports.cancelTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -354,12 +360,22 @@ function deleteTask(id, container) {
     _controller.taskManager.delete(id);
 };
 
+function editTask(form) {
+    form.addClass('edit-mode');
+}
+
+function cancelTask(form) {
+    form.removeClass('edit-mode');
+};
+
 function clearField(field) {
     field.html('');
 }
 
 exports.createNewTasks = createNewTasks;
 exports.deleteTask = deleteTask;
+exports.editTask = editTask;
+exports.cancelTask = cancelTask;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),

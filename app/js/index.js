@@ -2,7 +2,9 @@ import { STATUS } from './constant';
 import { taskManager } from './controller';
 import {
     createNewTasks,
-    deleteTask
+    deleteTask,
+    editTask,
+    cancelTask
 } from './task-logic';
 import { initElements } from './dom';
 
@@ -27,6 +29,12 @@ export function startEvents() {
                 case 'delete-task':
                     deleteTask(targetTaskId, targetContainer);
                     break;
+                case 'edit-task':
+                    editTask(targetForm);
+                    break;
+                case 'cancel-task':
+                    cancelTask(targetForm);
+                    break;        
                 default:
                     console.log('other');
                     break;

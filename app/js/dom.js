@@ -46,11 +46,11 @@ function drawTask(id, name, status, date) {
                     <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="${status == STATUS.completed}">
                     <p class="field name-field" data-id="${id}">${name}</p>
                     </div>
-                <div class="task-info">
-                    <p class="date-area" data-date="12.05.2020">${date}</p>
-                </div>
                 <input type="text" class="field edit-name-field" data-id="${id}" value="${name}">
-            </fieldset>
+                <div class="task-info">
+                    <p class="date-area" data-date="12.05.2020">${date} <span class="date-edit"></span></p>
+                </div>
+                </fieldset>
             <div class="btn-group">
                 <button class="btn btn-sm btn-status" data-state ="status-task" data-status="${status}"></button>
                 <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>
