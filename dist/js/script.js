@@ -134,7 +134,7 @@ var TaskManager = function () {
                 if (localStorage.getItem('tasksDB')) {
                     this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
                     $.each(this.tasksList, function (index, el) {
-                        return (0, _dom.drawTask)(el.id, el.name, el.status);
+                        return (0, _dom.drawTask)(el.id, el.name, el.status, el.date);
                     });
                 }
             } else {
@@ -213,7 +213,6 @@ function initElements() {
         }
 
         function setButtonPosition(a, b) {
-            console.log(a, b);
             if (a >= b) {
                 $('section.controls-task-secondary').removeClass('fixed');
             } else {
@@ -227,9 +226,9 @@ function initElements() {
     });
 }
 
-function drawTask(id, name, status) {
+function drawTask(id, name, status, date) {
     var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>\n                </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '</p>\n                </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
     newTask.html(createForm);
     _constant.$TASK_AREA.prepend(newTask);
 }
@@ -309,13 +308,22 @@ function createNewTasks(evnt) {
         errorAddField.html("Invalid value");
     } else {
         var taskId = new Date().valueOf() + '_' + taskName;
+
+        var date = new Date();
+        var twoDigitMonth = date.getMonth() + '';
+        if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
+        var twoDigitDay = date.getDate() + '';
+        if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
+        var taskDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+
         _controller.taskManager.add({
             status: _constant.STATUS.default,
             id: taskId,
-            name: taskName
+            name: taskName,
+            date: taskDate
         });
         addFied.val('');
-        (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
+        (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default, taskDate);
     }
 }
 
