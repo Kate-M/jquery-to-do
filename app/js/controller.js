@@ -11,7 +11,7 @@ class TaskManager {
             if (localStorage.getItem('tasksDB')) {
                 this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
                 $.each(this.tasksList,
-                    (index, el) => drawTask(el.id,el.name, el.status)
+                    (index, el) => drawTask(el.id,el.name, el.status, el.date)
                 );
             }
         } else {

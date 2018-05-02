@@ -14,13 +14,22 @@ function createNewTasks(evnt) {
         errorAddField.html("Invalid value");
     } else {
         let taskId = new Date().valueOf() + '_' + taskName;
+
+        var date = new Date();
+        var twoDigitMonth = date.getMonth() + '';
+        if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
+        var twoDigitDay = date.getDate() + '';
+        if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
+        var taskDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+
         taskManager.add({
             status: STATUS.default,
             id: taskId,
-            name: taskName
+            name: taskName,
+            date: taskDate
         });
         addFied.val('');
-        drawTask(taskId, taskName, STATUS.default);
+        drawTask(taskId, taskName, STATUS.default, taskDate);
     }
 }
 

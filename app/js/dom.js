@@ -26,7 +26,6 @@ function initElements() {
         }
 
         function setButtonPosition(a, b) {
-            console.log(a, b)
             if(a >= b){
                 $('section.controls-task-secondary').removeClass('fixed');
             } else {
@@ -40,7 +39,7 @@ function initElements() {
     });
 }
 
-function drawTask(id, name, status) {
+function drawTask(id, name, status, date) {
     let newTask = $('<div class="tasks-wrap"></div>');
     let createForm =
         $(`<form action="smth" class="form task-form">
@@ -50,7 +49,7 @@ function drawTask(id, name, status) {
                     <p class="field name-field" data-id="${id}">${name}</p>
                     </div>
                 <div class="task-info">
-                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>
+                    <p class="date-area" data-date="12.05.2020">${date}</p>
                 </div>
                 <input type="text" class="field edit-name-field" data-id="${id}" value="${name}">
             </fieldset>
