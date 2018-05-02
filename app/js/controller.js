@@ -10,7 +10,9 @@ class TaskManager {
         if (typeof (Storage) !== "undefined") {
             if (localStorage.getItem('tasksDB')) {
                 this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
-                this.tasksList.forEach(el => drawTask(el.id,el.name, el.status));
+                $.each(this.tasksList,
+                    (index, el) => drawTask(el.id,el.name, el.status)
+                );
             }
         } else {
             console.log('Sorry! No Web Storage support');

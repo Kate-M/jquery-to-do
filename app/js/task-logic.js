@@ -1,16 +1,17 @@
-import { STATUS, TASK_AREA } from './constant';
+import { STATUS, $TASK_AREA } from './constant';
 import { taskManager } from './controller';
 import { drawTask } from './dom';
+import { filterButton } from './index';
 
-let errorField = $('.error');
+let errorAddField = $('.error-add');
 let addFied = $('.add-field');
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    clearField(errorField);
-    let taskName = $.trim($('.add-field').val());
+    clearField(errorAddField);
+    let taskName = $.trim(addFied.val());
     if (!taskName) {
-        errorField.html = "Invalid value";
+        errorAddField.html("Invalid value");
     } else {
         let taskId = new Date().valueOf() + '_' + taskName;
         taskManager.add({
@@ -18,16 +19,15 @@ function createNewTasks(evnt) {
             id: taskId,
             name: taskName
         });
-        $('.add-field').value = '';
-
+        addFied.val('');
         drawTask(taskId, taskName, STATUS.default);
     }
 }
 
 function clearField(field) {
-    field.html = '';
+    field.html('');
 }
 
 export {
-    createNewTasks
+    createNewTasks,
 };

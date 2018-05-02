@@ -84,14 +84,14 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var TASK_AREA = $("#tasks-container");
+var $TASK_AREA = $(".tasks-container");
 var STATUS = {
     default: 0,
     processing: 1,
     completed: 2
 };
 
-exports.TASK_AREA = TASK_AREA;
+exports.$TASK_AREA = $TASK_AREA;
 exports.STATUS = STATUS;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
@@ -105,7 +105,7 @@ exports.STATUS = STATUS;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function($) {
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -133,7 +133,7 @@ var TaskManager = function () {
             if (typeof Storage !== "undefined") {
                 if (localStorage.getItem('tasksDB')) {
                     this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
-                    this.tasksList.forEach(function (el) {
+                    $.each(this.tasksList, function (index, el) {
                         return (0, _dom.drawTask)(el.id, el.name, el.status);
                     });
                 }
@@ -167,6 +167,7 @@ function sendTaskInLocalDB(tasksList) {
 
 exports.sendTaskInLocalDB = sendTaskInLocalDB;
 exports.taskManager = taskManager;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -188,14 +189,32 @@ exports.drawTask = exports.initElements = undefined;
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 function initElements() {
-    (function () {
-        $(window).scroll(appearanceButton);
-        function appearanceButton() {
-            var heidthFooter = $('footer').outerHeight();
-            var scrollHeight = $(document).height() - heidthFooter;
-            var scrollPosition = $(window).height() + $(window).scrollTop();
 
-            if (Math.round(scrollPosition) >= scrollHeight) {
+    (function () {
+        var windowHeight = $(window).height();
+        var heightHeader = $('header').outerHeight();
+        var heightFooter = $('footer').outerHeight();
+
+        startPositionButton();
+
+        $(window).change(startPositionButton);
+        $(window).scroll(appearanceButton);
+
+        function startPositionButton() {
+            var heightMain = $('main').outerHeight();
+            var commonHeight = Math.round(heightMain + heightHeader + heightFooter);
+            setButtonPosition(windowHeight, commonHeight);
+        };
+
+        function appearanceButton() {
+            var scrollHeight = $(document).height() - heightFooter;
+            var scrollPosition = Math.round($(window).height() + $(window).scrollTop());
+            setButtonPosition(scrollPosition, scrollHeight);
+        }
+
+        function setButtonPosition(a, b) {
+            console.log(a, b);
+            if (a >= b) {
                 $('section.controls-task-secondary').removeClass('fixed');
             } else {
                 $('section.controls-task-secondary').addClass('fixed');
@@ -209,11 +228,10 @@ function initElements() {
 }
 
 function drawTask(id, name, status) {
-    var newTask = document.createElement('div');
-    newTask.setAttribute('class', 'tasks-wrap');
-    _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
-
-    newTask.html = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+    var newTask = $('<div class="tasks-wrap"></div>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>\n                </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    newTask.html(createForm);
+    _constant.$TASK_AREA.prepend(newTask);
 }
 
 exports.initElements = initElements;
@@ -237,21 +255,22 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.startEvents = startEvents;
 
-var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
-
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
 
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
-(0, _dom.initElements)();
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+
+$(document).ready(function () {
+    _controller.taskManager.init();
+    (0, _dom.initElements)();
+});
 
 function startEvents() {
     $('#add-task').on('click', _taskLogic.createNewTasks);
 }
-
-document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
@@ -277,15 +296,17 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 
 var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
-var errorField = $('.error');
+var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
+
+var errorAddField = $('.error-add');
 var addFied = $('.add-field');
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    clearField(errorField);
-    var taskName = $.trim($('.add-field').val());
+    clearField(errorAddField);
+    var taskName = $.trim(addFied.val());
     if (!taskName) {
-        errorField.html = "Invalid value";
+        errorAddField.html("Invalid value");
     } else {
         var taskId = new Date().valueOf() + '_' + taskName;
         _controller.taskManager.add({
@@ -293,14 +314,13 @@ function createNewTasks(evnt) {
             id: taskId,
             name: taskName
         });
-        $('.add-field').value = '';
-
+        addFied.val('');
         (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
     }
 }
 
 function clearField(field) {
-    field.html = '';
+    field.html('');
 }
 
 exports.createNewTasks = createNewTasks;

@@ -1,14 +1,15 @@
-import { initElements } from './dom';
 import { STATUS } from './constant';
 import { taskManager } from './controller';
 import {
     createNewTasks
-} from './task-logic'
+} from './task-logic';
+import { initElements } from './dom';
 
-initElements();
+$(document).ready(function () {
+    taskManager.init();
+    initElements();
+});
 
 export function startEvents() {
     $('#add-task').on('click', createNewTasks);
 }
-
-document.addEventListener('DOMContentLoaded', taskManager.init());
