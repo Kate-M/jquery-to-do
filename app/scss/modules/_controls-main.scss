@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    position: relative;
     flex-wrap: wrap;
     width: 100%;
     @media screen and (max-width: 767px) {
@@ -22,13 +21,13 @@
     .error {
         position: absolute;
         left: 0;
-        top: -30px;
+        bottom: -20px;
         width: 100%;
-        text-align: center;
         color:#F1646C;
     }
     .control-item {
         height: 35px;
+        position: relative;
         @media screen and (max-width: 767px) {
             width:100%;
         }

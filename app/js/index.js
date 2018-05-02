@@ -1,21 +1,15 @@
-var he = $('main').height();
-// console.log(he)
+import { STATUS } from './constant';
+import { taskManager } from './controller';
+import {
+    createNewTasks
+} from './task-logic';
+import { initElements } from './dom';
 
-(function () {
-    $(window).scroll(appearanceButton);
-    function appearanceButton() {
-        var heidthFooter = $('footer').outerHeight();
-        var scrollHeight = $(document).height() - heidthFooter;
-        var scrollPosition = $(window).height() + $(window).scrollTop();
-
-        if (Math.round(scrollPosition) >= scrollHeight) {
-            $('section.controls-task-secondary').removeClass('fixed');
-        } else {
-            $('section.controls-task-secondary').addClass('fixed');
-        }
-    }
-})();
-
-$('.menu-btn').click(function () {
-    $('.controls-task-main').toggleClass('open');
+$(document).ready(function () {
+    taskManager.init();
+    initElements();
 });
+
+export function startEvents() {
+    $('#add-task').on('click', createNewTasks);
+}

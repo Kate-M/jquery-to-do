@@ -34,6 +34,7 @@
                             </fieldset>
                             <button class="btn btn-md add-btn" id="add-task"></button>
                         </form>
+                        <p class="error error-add"></p>
                     </div>
                     <div class="control-item search-task">
                         <form action="" class="form search-form">
@@ -42,6 +43,7 @@
                             </fieldset>
                             <button class="btn btn-md search-btn" id="search-btn"></button>
                         </form>
+                        <p class="error error-search"></p>
                     </div>
                     <div class="control-item filter-task">
                         <a class="filter-btn">
@@ -62,242 +64,9 @@
                     <div class="control-item reset-search">
                         <button class="btn btn-lg reset-btn" id="reset-search-btn">Reset search</button>
                     </div>
-                    <p class="error"></p>
                 </section>
                 <section id="tasks-container" class="tasks-container">
-                        <div class="tasks-wrap">
-                                <form action="smth" class="form task-form">
-                                    <fieldset class="field-wrap">
-                                        <div class="task-content">
-                                            <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                            <p class="field name-field" data-id="0">Go out</p>
-                                        </div>
-                                        <div class="task-info">
-                                            <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                        </div>
-                                        <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                    </fieldset>
-                                    <div class="btn-group">
-                                        <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                        <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                        <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                        <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                        <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="tasks-wrap">
-                                    <form action="smth" class="form task-form">
-                                        <fieldset class="field-wrap">
-                                            <div class="task-content">
-                                                <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                <p class="field name-field" data-id="0">Go out</p>
-                                            </div>
-                                            <div class="task-info">
-                                                <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                            </div>
-                                            <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                        </fieldset>
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                            <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                            <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                            <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                            <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="tasks-wrap">
-                                        <form action="smth" class="form task-form">
-                                            <fieldset class="field-wrap">
-                                                <div class="task-content">
-                                                    <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                    <p class="field name-field" data-id="0">Go out</p>
-                                                </div>
-                                                <div class="task-info">
-                                                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                </div>
-                                                <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                            </fieldset>
-                                            <div class="btn-group">
-                                                <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="tasks-wrap">
-                                            <form action="smth" class="form task-form">
-                                                <fieldset class="field-wrap">
-                                                    <div class="task-content">
-                                                        <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                        <p class="field name-field" data-id="0">Go out</p>
-                                                    </div>
-                                                    <div class="task-info">
-                                                        <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                    </div>
-                                                    <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                </fieldset>
-                                                <div class="btn-group">
-                                                    <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                    <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                    <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                    <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                    <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="tasks-wrap">
-                                                <form action="smth" class="form task-form">
-                                                    <fieldset class="field-wrap">
-                                                        <div class="task-content">
-                                                            <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                            <p class="field name-field" data-id="0">Go out</p>
-                                                        </div>
-                                                        <div class="task-info">
-                                                            <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                        </div>
-                                                        <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                    </fieldset>
-                                                    <div class="btn-group">
-                                                        <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                        <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                        <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                        <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                        <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div class="tasks-wrap">
-                                                    <form action="smth" class="form task-form">
-                                                        <fieldset class="field-wrap">
-                                                            <div class="task-content">
-                                                                <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                <p class="field name-field" data-id="0">Go out</p>
-                                                            </div>
-                                                            <div class="task-info">
-                                                                <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                            </div>
-                                                            <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                        </fieldset>
-                                                        <div class="btn-group">
-                                                            <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                            <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                            <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                            <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                            <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div class="tasks-wrap">
-                                                        <form action="smth" class="form task-form">
-                                                            <fieldset class="field-wrap">
-                                                                <div class="task-content">
-                                                                    <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                    <p class="field name-field" data-id="0">Go out</p>
-                                                                </div>
-                                                                <div class="task-info">
-                                                                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                                </div>
-                                                                <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                            </fieldset>
-                                                            <div class="btn-group">
-                                                                <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                                <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                                <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                                <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                    <div class="tasks-wrap">
-                                                            <form action="smth" class="form task-form">
-                                                                <fieldset class="field-wrap">
-                                                                    <div class="task-content">
-                                                                        <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                        <p class="field name-field" data-id="0">Go out</p>
-                                                                    </div>
-                                                                    <div class="task-info">
-                                                                        <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                                    </div>
-                                                                    <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                                </fieldset>
-                                                                <div class="btn-group">
-                                                                    <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                                    <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                                    <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                                    <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                                    <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <div class="tasks-wrap">
-                                                                <form action="smth" class="form task-form">
-                                                                    <fieldset class="field-wrap">
-                                                                        <div class="task-content">
-                                                                            <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                            <p class="field name-field" data-id="0">Go out</p>
-                                                                        </div>
-                                                                        <div class="task-info">
-                                                                            <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                                        </div>
-                                                                        <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                                    </fieldset>
-                                                                    <div class="btn-group">
-                                                                        <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                                        <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                                        <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                                        <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                                        <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                            <div class="tasks-wrap">
-                                                                    <form action="smth" class="form task-form">
-                                                                        <fieldset class="field-wrap">
-                                                                            <div class="task-content">
-                                                                                <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                                <p class="field name-field" data-id="0">Go out</p>
-                                                                            </div>
-                                                                            <div class="task-info">
-                                                                                <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                                            </div>
-                                                                            <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                                        </fieldset>
-                                                                        <div class="btn-group">
-                                                                            <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                                            <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                                            <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                                            <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                                            <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
-                                                                <div class="tasks-wrap">
-                                                                        <form action="smth" class="form task-form">
-                                                                            <fieldset class="field-wrap">
-                                                                                <div class="task-content">
-                                                                                    <input type="checkbox" class="btn-status-complete" data-state="status-complete-task" checked="false">
-                                                                                    <p class="field name-field" data-id="0">Go out</p>
-                                                                                </div>
-                                                                                <div class="task-info">
-                                                                                    <p class="date-area" data-date="12.05.2020">12.05.2020</p>
-                                                                                </div>
-                                                                                <input type="text" class="field edit-name-field" data-id="0" value="Go out1">
-                                                                            </fieldset>
-                                                                            <div class="btn-group">
-                                                                                <button class="btn btn-sm btn-status" data-state="status-task" data-status="1"></button>
-                                                                                <button class="btn btn-sm btn-edit" data-state="edit-task"></button>
-                                                                                <button class="btn btn-sm btn-delete-item" data-state="delete-task"></button>
-                                                                                <button class="btn btn-sm btn-save" data-state="save-task"></button>
-                                                                                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
-                                                                    
-                    <div class="tasks-wrap">
+                    <!-- <div class="tasks-wrap">
                         <form action="smth" class="form task-form">
                             <fieldset class="field-wrap">
                                 <div class="task-content">
@@ -317,22 +86,22 @@
                                 <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>
                             </div>
                         </form>
-                    </div>
+                    </div> -->
                 </section>
             </div>
         </main>
         <section class="controls-task-secondary fixed">
-                <div class="container">
-                    <buton class="btn-group">
-                        <button class="btn btn-lg" id="btn-remove-completed">
-                            Remove completed
-                        </button>
-                        <button class="btn btn-lg" id="btn-remove-all">
-                            Remove all
-                        </button>
-                    </buton>
-                </div>
-            </section>
+            <div class="container">
+                <buton class="btn-group">
+                    <button class="btn btn-lg" id="btn-remove-completed">
+                        Remove completed
+                    </button>
+                    <button class="btn btn-lg" id="btn-remove-all">
+                        Remove all
+                    </button>
+                </buton>
+            </div>
+        </section>
         <footer>
             <div class="container">
                 <div class="copyright">
