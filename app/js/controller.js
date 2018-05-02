@@ -28,6 +28,11 @@ class TaskManager {
     save() {
         sendTaskInLocalDB(this.tasksList);
     }
+    
+    delete(id) {
+        this.tasksList = this.tasksList.filter(i => i.id != id);
+        sendTaskInLocalDB(this.tasksList);
+    }
 }
 
 var taskManager = new TaskManager();
