@@ -61,6 +61,12 @@ class Utils {
         }
         taskManager.save(form);
     }
+
+    changeStatus(form, id, statusValue) {
+        let status = taskManager.status(form, id, statusValue);
+        form.find('.btn-status-complete').attr('checked', status == STATUS.COMPLETED);
+        form.find('.btn-status').attr('data-status', status);
+    }
 };
 
 function getDate() {
