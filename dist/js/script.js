@@ -227,10 +227,11 @@ var TaskManager = function () {
             var _this = this;
 
             $('#add-task').on('click', _utils.utils.createNewTasks);
+            $('.search-field').on('input', _utils.utils.searchTask);
+            $('#reset-search-btn').on('click', _utils.utils.resetSearchTask);
             $('#tasks-container').on('click', this.switchedTaskControls);
             $('.menu-btn').on('click', this.openMenuButton);
             $('.filter-btn').on('click', this.openFilterButton);
-
             $.each($('.filter-item'), function (index, el) {
                 return $(el).on('click', _this.switchedFilter);
             });
@@ -366,6 +367,7 @@ var TaskManager = function () {
         key: 'filter',
         value: function filter(filterParam) {
             filterMode = filterParam;
+            console.log(filterMode);
             var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
             if (!filterParam) {
                 $.each(filteredTasksList, function (index, el) {
@@ -383,6 +385,39 @@ var TaskManager = function () {
                 inFiltered = filteredTasks;
                 return filteredTasks;
             }
+        }
+    }, {
+        key: 'clear',
+        value: function clear() {
+            $.each(this.tasksList, function (index, el) {
+                return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+            });
+        }
+    }, {
+        key: 'search',
+        value: function search(searchValue) {
+            var serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
+
+            if (searchValue != '') {
+                var patt = new RegExp(searchValue, "i");
+                var serchedTasks = serchedTasksList.filter(function (el, index, array) {
+                    return el.name.search(patt) >= 0;
+                });
+                $.each(serchedTasks, function (index, el) {
+                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                });
+                inSearched = serchedTasks;
+                return serchedTasks;
+            } else {
+                inSearched = null;
+            }
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            console.log(filterMode);
+            // this.filter(filterMode);
+            inSearched = null;
         }
     }, {
         key: 'sendTaskInLocalDB',
@@ -428,7 +463,10 @@ var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var errorAddField = $('.error-add');
+var errorSearchField = $('.error-search');
 var addField = $('.add-field');
+var searchField = $('.search-field');
+var resetSearchButton = $('.reset-search');
 
 var Utils = function () {
     function Utils() {
@@ -439,6 +477,7 @@ var Utils = function () {
         key: 'createNewTasks',
         value: function createNewTasks(evnt) {
             evnt.preventDefault();
+            clearFilter();
             clearField(errorAddField);
             var taskName = $.trim(addField.val());
             if (!taskName) {
@@ -502,10 +541,35 @@ var Utils = function () {
         value: function filterTask(filterParam) {
             _view.taskArea.html('');
             var filteredTasks = _taskManager.taskManager.filter(filterParam);
-            console.log(filteredTasks, filteredTasks.length);
             if (filteredTasks.length == 0) {
                 _view.taskArea.html('Nothing');
             }
+        }
+    }, {
+        key: 'searchTask',
+        value: function searchTask(event) {
+            event.preventDefault();
+            clearField(errorSearchField);
+            var searchValue = $.trim(searchField.val().toLowerCase());
+
+            if (searchValue != '') {
+                _view.taskArea.html('');
+                resetSearchButton.addClass('open');
+                var serchedTasks = _taskManager.taskManager.search(searchValue);
+                if (serchedTasks.length == 0) {
+                    _view.taskArea.html('Nothing');
+                }
+            } else {
+                errorSearchField.html('Empty field');
+            }
+        }
+    }, {
+        key: 'resetSearchTask',
+        value: function resetSearchTask(evnt) {
+            evnt.preventDefault();
+            $('.search-field').value = '';
+            resetSearchButton.removeClass('open');
+            _taskManager.taskManager.reset();
         }
     }]);
 
@@ -524,6 +588,11 @@ function getDate() {
 
 function clearField(field) {
     field.html('');
+}
+
+function clearFilter() {
+    _taskManager.taskManager.clear();
+    $('.filter-btn').html('All');
 }
 
 var utils = new Utils();
