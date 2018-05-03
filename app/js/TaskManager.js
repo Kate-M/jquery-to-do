@@ -35,14 +35,16 @@ class TaskManager {
 
     addEventsListeners() {
         $('#add-task').on('click', utils.createNewTasks);
+        $('.search-field').on('input', utils.searchTask);
+        $('#reset-search-btn').on('click', utils.resetSearchTask);
         $('#tasks-container').on('click', this.switchedTaskControls);
         $('.menu-btn').on('click', this.openMenuButton);
         $('.filter-btn').on('click', this.openFilterButton);
-
         $.each($('.filter-item'), (index, el) =>
             $(el).on('click', this.switchedFilter)
         );
     }
+
     switchedFilter(event) {
         event.preventDefault();
         let activeFilter = $(event.target).html();
@@ -161,6 +163,7 @@ class TaskManager {
 
     filter(filterParam) {
         filterMode = filterParam;
+        console.log(filterMode);
         let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
         if (!filterParam) {
             $.each(filteredTasksList, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
@@ -174,7 +177,32 @@ class TaskManager {
         }
         
     }
-    
+
+    clear() {
+        $.each(this.tasksList,
+            (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit)
+        );
+    }
+
+    search(searchValue) {
+        let serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
+
+        if (searchValue != '') {
+            var patt = new RegExp(searchValue, "i");
+            let serchedTasks = serchedTasksList.filter((el, index, array) => el.name.search(patt) >=0);
+            $.each(serchedTasks, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            inSearched = serchedTasks;
+            return serchedTasks;
+        } else {
+            inSearched = null;
+        }
+    }
+    reset() {
+        console.log(filterMode);
+        // this.filter(filterMode);
+        inSearched = null;
+    }
+
     sendTaskInLocalDB(tasksList) {
         let serialTasksList = JSON.stringify(tasksList);
         localStorage.setItem("tasksDB", serialTasksList);

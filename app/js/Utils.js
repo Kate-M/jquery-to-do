@@ -5,12 +5,16 @@ import { taskArea } from './view';
 
 
 let errorAddField = $('.error-add');
+let errorSearchField = $('.error-search');
 let addField = $('.add-field');
+let searchField = $('.search-field');
+let resetSearchButton = $('.reset-search');
 
 class Utils {
 
     createNewTasks(evnt) {
         evnt.preventDefault();
+        clearFilter();
         clearField(errorAddField);
         let taskName = $.trim(addField.val());
         if (!taskName) {
@@ -73,12 +77,37 @@ class Utils {
     filterTask(filterParam) {
         taskArea.html('');
         let filteredTasks = taskManager.filter(filterParam);
-        console.log(filteredTasks, filteredTasks.length);
         if (filteredTasks.length == 0) {
             taskArea.html('Nothing');
         }
     }
+
+    searchTask(event) {
+        event.preventDefault();
+        clearField(errorSearchField);
+        var searchValue = $.trim(searchField.val().toLowerCase());
+
+        if(searchValue != '') {
+            taskArea.html('');
+            resetSearchButton.addClass('open');
+            let serchedTasks = taskManager.search(searchValue);
+            if (serchedTasks.length == 0) {
+                taskArea.html('Nothing');
+            }
+        }
+        else {
+            errorSearchField.html('Empty field');
+        }
+    }
+
+    resetSearchTask(evnt) {
+        evnt.preventDefault();
+        $('.search-field').value = '';
+        resetSearchButton.removeClass('open');
+        taskManager.reset();
+    }
 }
+
 function getDate() {
     var date = new Date();
     var twoDigitMonth = date.getMonth() + '';
@@ -91,6 +120,11 @@ function getDate() {
 
 function clearField(field) {
     field.html('');
+}
+
+function clearFilter() {
+    taskManager.clear();
+    $('.filter-btn').html('All');
 }
 
 var utils = new Utils();
