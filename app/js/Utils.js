@@ -1,5 +1,5 @@
 import { STATUS } from './constant';
-import { taskManager } from './TaskManager';
+import { taskManager } from './taskManager';
 import { renderTask } from './view';
 
 let errorAddField = $('.error-add');
@@ -10,7 +10,6 @@ class Utils {
     createNewTasks(evnt) {
         evnt.preventDefault();
         clearField(errorAddField);
-        console.log(addField);
         let taskName = $.trim(addField.val());
         if (!taskName) {
             errorAddField.html("Invalid value");

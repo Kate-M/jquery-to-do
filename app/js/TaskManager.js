@@ -1,12 +1,14 @@
 import { startEvents } from './index';
 import { renderTask } from './view';
 import { buttonPosition } from './buttonPosition';
-import { utils } from './Utils';
+import { utils } from './utils';
 
 class TaskManager {
     constructor() {
         this.tasksList = [];
+        console.log('taskmanager created');
     }
+    
     init() {
         this.parseDB();
         this.addEventsListeners();
