@@ -1,3 +1,4 @@
+import { STATUS } from './constant';
 import { startEvents } from './index';
 import { renderTask } from './view';
 import { buttonPosition } from './buttonPosition';
@@ -14,6 +15,7 @@ class TaskManager {
         this.addEventsListeners();
         buttonPosition();
     }
+
     parseDB() {
         if (typeof (Storage) !== "undefined") {
             if (localStorage.getItem('tasksDB')) {
@@ -26,11 +28,13 @@ class TaskManager {
             console.log('Sorry! No Web Storage support');
         }
     }
+
     addEventsListeners() {
         $('#add-task').on('click', utils.createNewTasks);
         $('#tasks-container').on('click', this.switchedTaskControls);
         $('.menu-btn').on('click', this.openMenuButton);
     }
+
     switchedTaskControls(event) {
         event.preventDefault();
         let targetElement = $(event.target);
@@ -57,6 +61,12 @@ class TaskManager {
             case 'save-task':
                 utils.saveTask(targetForm, targetTaskId, targetTaskName);
                 break;
+            case 'status-task':
+                utils.changeStatus(targetForm, targetTaskId, STATUS.PROCESSING);
+                break;
+            case 'status-complete-task':
+                utils.changeStatus(targetForm, targetTaskId, STATUS.COMPLETED);
+                break;        
             default:
                 console.log('other');
                 break;
@@ -65,8 +75,6 @@ class TaskManager {
     openMenuButton() {
         $('.controls-task-main').toggleClass('open');
     }
-
-    
 
     get(id) {
         return this.tasksList.filter((el, index, array) =>
@@ -80,7 +88,6 @@ class TaskManager {
             name: name,
             date: date
         });
-
     }
 
     add(item) {
@@ -104,6 +111,18 @@ class TaskManager {
     delete(id) {
         this.tasksList = this.tasksList.filter(i => i.id != id);
         this.sendTaskInLocalDB(this.tasksList);
+    }
+
+    status(form, id, statusValue) {
+        let currentTask = taskManager.get(id);
+        
+        if (currentTask.status == statusValue) {
+            currentTask.status = STATUS.DEFAULT;
+        } else {
+            currentTask.status = statusValue;
+        }
+        this.sendTaskInLocalDB(this.tasksList);
+        return currentTask.status;
     }
 
     sendTaskInLocalDB(tasksList) {

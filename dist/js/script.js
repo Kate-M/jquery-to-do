@@ -133,7 +133,7 @@ Object.defineProperty(exports, "__esModule", {
 var STATUS = {
     DEFAULT: 0,
     PROCESSING: 1,
-    COMLETED: 2
+    COMPLETED: 2
 };
 
 exports.STATUS = STATUS;
@@ -175,6 +175,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.taskManager = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
@@ -246,6 +248,12 @@ var TaskManager = function () {
                 case 'save-task':
                     _utils.utils.saveTask(targetForm, targetTaskId, targetTaskName);
                     break;
+                case 'status-task':
+                    _utils.utils.changeStatus(targetForm, targetTaskId, _constant.STATUS.PROCESSING);
+                    break;
+                case 'status-complete-task':
+                    _utils.utils.changeStatus(targetForm, targetTaskId, _constant.STATUS.COMPLETED);
+                    break;
                 default:
                     console.log('other');
                     break;
@@ -302,6 +310,19 @@ var TaskManager = function () {
                 return i.id != id;
             });
             this.sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'status',
+        value: function status(form, id, statusValue) {
+            var currentTask = taskManager.get(id);
+
+            if (currentTask.status == statusValue) {
+                currentTask.status = _constant.STATUS.DEFAULT;
+            } else {
+                currentTask.status = statusValue;
+            }
+            this.sendTaskInLocalDB(this.tasksList);
+            return currentTask.status;
         }
     }, {
         key: 'sendTaskInLocalDB',
@@ -409,6 +430,13 @@ var Utils = function () {
             }
             _taskManager.taskManager.save(form);
         }
+    }, {
+        key: 'changeStatus',
+        value: function changeStatus(form, id, statusValue) {
+            var status = _taskManager.taskManager.status(form, id, statusValue);
+            form.find('.btn-status-complete').attr('checked', status == _constant.STATUS.COMPLETED);
+            form.find('.btn-status').attr('data-status', status);
+        }
     }]);
 
     return Utils;
@@ -458,7 +486,7 @@ var taskArea = $("#tasks-container");
 
 function renderTask(id, name, status, date, dateEdit) {
     var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.COMLETED) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" ' + (status == _constant.STATUS.COMPLETED ? 'checked="checked"' : '') + '>\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
     newTask.html(createForm);
     taskArea.prepend(newTask);
 }

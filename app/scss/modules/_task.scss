@@ -70,7 +70,7 @@
     }
 }
 
-.btn-status-complete[checked="true"]+.name-field {
+.btn-status-complete[checked="checked"]+.name-field {
     text-decoration: line-through;
 }
 .complete {
@@ -88,7 +88,13 @@
     display: inline-block;
     vertical-align: middle;
     cursor: pointer;
-    &[checked="true"] {
+    &::-ms-check {
+        display: none;
+    }
+    &[checked="checked"] {
+        &::-ms-check {
+            display: block;
+        }
         border: 1px solid #9ED5C0;
         &:after {
             content: '\e909';

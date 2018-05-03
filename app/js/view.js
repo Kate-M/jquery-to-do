@@ -7,7 +7,7 @@ function renderTask(id, name, status, date, dateEdit) {
         $(`<form action="smth" class="form task-form">
             <fieldset class="field-wrap">
                 <div class="task-content">
-                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="${status == STATUS.COMLETED}">
+                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" ${status == STATUS.COMPLETED ? 'checked="checked"' : '' }>
                     <p class="field name-field" data-id="${id}">${name}</p>
                     </div>
                 <input type="text" class="field edit-name-field" data-id="${id}">

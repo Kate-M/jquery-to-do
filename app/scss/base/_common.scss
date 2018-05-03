@@ -15,7 +15,8 @@ h1,figure,fieldset{
       padding: 0;
 }
 input,select, textarea, option {
-    -webkit-appearance: none;
+    appearance: none;
+    -ms-appearance: none;
     border-radius:0;
     border: 0;
     padding: 0;
@@ -23,6 +24,7 @@ input,select, textarea, option {
     &:focus, &:active {
       outline:0;
     }
+    
 }
 :-ms-input-placeholder {
     font-family: $font_OSR;
