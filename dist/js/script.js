@@ -71,6 +71,52 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./app/js/buttonPosition.js":
+/*!**********************************!*\
+  !*** ./app/js/buttonPosition.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.buttonPosition = buttonPosition;
+function buttonPosition() {
+    var windowHeight = $(window).height();
+    var heightHeader = $('header').outerHeight();
+    var heightFooter = $('footer').outerHeight();
+
+    startPositionButton();
+
+    $('.tasks-container').bind("DOMSubtreeModified", startPositionButton);
+    $(window).scroll(appearanceButton);
+
+    function startPositionButton() {
+        var heightMain = $('main').outerHeight();
+        var commonHeight = Math.round(heightMain + heightHeader);
+        if (windowHeight >= commonHeight) {
+            return $('section.controls-task-secondary').removeClass('fixed');
+        }
+    };
+
+    function appearanceButton() {
+        var scrollHeight = $(document).height() - heightFooter;
+        var scrollPosition = Math.round($(window).height() + $(window).scrollTop());
+        if (scrollPosition >= scrollHeight) {
+            return $('section.controls-task-secondary').removeClass('fixed');
+        } else {
+            return $('section.controls-task-secondary').addClass('fixed');
+        }
+    }
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
 /***/ "./app/js/constant.js":
 /*!****************************!*\
   !*** ./app/js/constant.js ***!
@@ -79,169 +125,18 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var $TASK_AREA = $(".tasks-container");
 var STATUS = {
-    default: 0,
-    processing: 1,
-    completed: 2
+    DEFAULT: 0,
+    PROCESSING: 1,
+    COMLETED: 2
 };
 
-exports.$TASK_AREA = $TASK_AREA;
 exports.STATUS = STATUS;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
-
-/***/ }),
-
-/***/ "./app/js/controller.js":
-/*!******************************!*\
-  !*** ./app/js/controller.js ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.taskManager = exports.sendTaskInLocalDB = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
-
-var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var TaskManager = function () {
-    function TaskManager() {
-        _classCallCheck(this, TaskManager);
-
-        this.tasksList = [];
-    }
-
-    _createClass(TaskManager, [{
-        key: 'init',
-        value: function init() {
-            if (typeof Storage !== "undefined") {
-                if (localStorage.getItem('tasksDB')) {
-                    this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
-                    $.each(this.tasksList, function (index, el) {
-                        return (0, _dom.drawTask)(el.id, el.name, el.status, el.date);
-                    });
-                }
-            } else {
-                console.log('Sorry! No Web Storage support');
-            }
-            (0, _index.startEvents)();
-        }
-    }, {
-        key: 'add',
-        value: function add(item) {
-            this.tasksList.push(item);
-            sendTaskInLocalDB(this.tasksList);
-        }
-    }, {
-        key: 'save',
-        value: function save() {
-            sendTaskInLocalDB(this.tasksList);
-        }
-    }, {
-        key: 'delete',
-        value: function _delete(id) {
-            this.tasksList = this.tasksList.filter(function (i) {
-                return i.id != id;
-            });
-            sendTaskInLocalDB(this.tasksList);
-        }
-    }]);
-
-    return TaskManager;
-}();
-
-var taskManager = new TaskManager();
-
-function sendTaskInLocalDB(tasksList) {
-    var serialTasksList = JSON.stringify(tasksList);
-    localStorage.setItem("tasksDB", serialTasksList);
-}
-
-exports.sendTaskInLocalDB = sendTaskInLocalDB;
-exports.taskManager = taskManager;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
-
-/***/ }),
-
-/***/ "./app/js/dom.js":
-/*!***********************!*\
-  !*** ./app/js/dom.js ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.drawTask = exports.initElements = undefined;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-function initElements() {
-
-    (function () {
-        var windowHeight = $(window).height();
-        var heightHeader = $('header').outerHeight();
-        var heightFooter = $('footer').outerHeight();
-
-        startPositionButton();
-
-        $(window).bind("DOMSubtreeModified", startPositionButton);
-        $(window).scroll(appearanceButton);
-
-        function startPositionButton() {
-            var heightMain = $('main').outerHeight();
-            var commonHeight = Math.round(heightMain + heightHeader);
-            if (windowHeight >= commonHeight) {
-                return $('section.controls-task-secondary').removeClass('fixed');
-            }
-        };
-
-        function appearanceButton() {
-            var scrollHeight = $(document).height() - heightFooter;
-            var scrollPosition = Math.round($(window).height() + $(window).scrollTop());
-            if (scrollPosition >= scrollHeight) {
-                return $('section.controls-task-secondary').removeClass('fixed');
-            } else {
-                return $('section.controls-task-secondary').addClass('fixed');
-            }
-        }
-    })();
-
-    $('.menu-btn').click(function () {
-        $('.controls-task-main').toggleClass('open');
-    });
-}
-
-function drawTask(id, name, status, date) {
-    var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '</p>\n                </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
-    newTask.html(createForm);
-    _constant.$TASK_AREA.prepend(newTask);
-}
-
-exports.initElements = initElements;
-exports.drawTask = drawTask;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -255,51 +150,19 @@ exports.drawTask = drawTask;
 "use strict";
 /* WEBPACK VAR INJECTION */(function($) {
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.startEvents = startEvents;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
-
-var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
-
-var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+var _taskManager = __webpack_require__(/*! ./taskManager */ "./app/js/taskManager.js");
 
 $(document).ready(function () {
-    _controller.taskManager.init();
-    (0, _dom.initElements)();
+    _taskManager.taskManager.init();
 });
-
-function startEvents() {
-    $('#add-task').on('click', _taskLogic.createNewTasks);
-    $('#tasks-container').on('click', function (evnt) {
-        evnt.preventDefault();
-        var targetElement = $(evnt.target);
-        var targetButton = targetElement.attr('data-state');
-        var targetForm = targetElement.parents('form');
-        var targetContainer = targetForm.parent();
-        var targetTaskId = targetForm.find('.name-field').attr('data-id');
-        switch (targetButton) {
-            case 'delete-task':
-                (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
-                break;
-            default:
-                console.log('other');
-                break;
-        }
-    });
-}
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
-/***/ "./app/js/task-logic.js":
-/*!******************************!*\
-  !*** ./app/js/task-logic.js ***!
-  \******************************/
+/***/ "./app/js/taskManager.js":
+/*!*******************************!*\
+  !*** ./app/js/taskManager.js ***!
+  \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -309,57 +172,298 @@ function startEvents() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.deleteTask = exports.createNewTasks = undefined;
+exports.taskManager = undefined;
 
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
-
-var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
-var errorAddField = $('.error-add');
-var addFied = $('.add-field');
+var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
 
-function createNewTasks(evnt) {
-    evnt.preventDefault();
-    clearField(errorAddField);
-    var taskName = $.trim(addFied.val());
-    if (!taskName) {
-        errorAddField.html("Invalid value");
-    } else {
-        var taskId = new Date().valueOf() + '_' + taskName;
+var _buttonPosition = __webpack_require__(/*! ./buttonPosition */ "./app/js/buttonPosition.js");
 
-        var date = new Date();
-        var twoDigitMonth = date.getMonth() + '';
-        if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
-        var twoDigitDay = date.getDate() + '';
-        if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
-        var taskDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+var _utils = __webpack_require__(/*! ./utils */ "./app/js/utils.js");
 
-        _controller.taskManager.add({
-            status: _constant.STATUS.default,
-            id: taskId,
-            name: taskName,
-            date: taskDate
-        });
-        addFied.val('');
-        (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default, taskDate);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var TaskManager = function () {
+    function TaskManager() {
+        _classCallCheck(this, TaskManager);
+
+        this.tasksList = [];
+        console.log('taskmanager created');
     }
-}
 
-function deleteTask(id, container) {
-    container.remove();
-    _controller.taskManager.delete(id);
-};
+    _createClass(TaskManager, [{
+        key: 'init',
+        value: function init() {
+            this.parseDB();
+            this.addEventsListeners();
+            (0, _buttonPosition.buttonPosition)();
+        }
+    }, {
+        key: 'parseDB',
+        value: function parseDB() {
+            if (typeof Storage !== "undefined") {
+                if (localStorage.getItem('tasksDB')) {
+                    this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                    $.each(this.tasksList, function (index, el) {
+                        return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                    });
+                }
+            } else {
+                console.log('Sorry! No Web Storage support');
+            }
+        }
+    }, {
+        key: 'addEventsListeners',
+        value: function addEventsListeners() {
+            $('#add-task').on('click', _utils.utils.createNewTasks);
+            $('#tasks-container').on('click', this.switchedTaskControls);
+            $('.menu-btn').on('click', this.openMenuButton);
+        }
+    }, {
+        key: 'switchedTaskControls',
+        value: function switchedTaskControls(event) {
+            event.preventDefault();
+            var targetElement = $(event.target);
+            var targetButton = targetElement.attr('data-state');
+            var targetForm = targetElement.parents('form');
+            var targetContainer = targetForm.parent();
+            var targetTaskId = targetForm.find('.name-field').attr('data-id');
+            var targetTaskName = targetForm.find('.name-field').html();
+
+            switch (targetButton) {
+                case 'delete-task':
+                    _utils.utils.deleteTask(targetTaskId, targetContainer);
+                    break;
+                case 'edit-task':
+                    _utils.utils.editTask(targetForm, targetTaskName);
+                    break;
+                case 'cancel-task':
+                    _utils.utils.cancelTask(targetForm);
+                    break;
+                case 'save-task':
+                    _utils.utils.saveTask(targetForm, targetTaskId, targetTaskName);
+                    break;
+                default:
+                    console.log('other');
+                    break;
+            }
+        }
+    }, {
+        key: 'openMenuButton',
+        value: function openMenuButton() {
+            $('.controls-task-main').toggleClass('open');
+        }
+    }, {
+        key: 'get',
+        value: function get(id) {
+            return this.tasksList.filter(function (el, index, array) {
+                return el.id == id;
+            })[0];
+        }
+    }, {
+        key: 'create',
+        value: function create(id, name, status, date) {
+            this.add({
+                status: status,
+                id: id,
+                name: name,
+                date: date
+            });
+        }
+    }, {
+        key: 'add',
+        value: function add(item) {
+            this.tasksList.push(item);
+            this.sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'edit',
+        value: function edit(form, name) {
+            form.addClass('edit-mode');
+        }
+    }, {
+        key: 'cancel',
+        value: function cancel(form) {
+            form.removeClass('edit-mode');
+        }
+    }, {
+        key: 'save',
+        value: function save(form) {
+            form.removeClass('edit-mode');
+            this.sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(id) {
+            this.tasksList = this.tasksList.filter(function (i) {
+                return i.id != id;
+            });
+            this.sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'sendTaskInLocalDB',
+        value: function sendTaskInLocalDB(tasksList) {
+            var serialTasksList = JSON.stringify(tasksList);
+            localStorage.setItem("tasksDB", serialTasksList);
+        }
+    }]);
+
+    return TaskManager;
+}();
+
+var taskManager = new TaskManager();
+
+exports.taskManager = taskManager;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
+/***/ "./app/js/utils.js":
+/*!*************************!*\
+  !*** ./app/js/utils.js ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.utils = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+var _taskManager = __webpack_require__(/*! ./taskManager */ "./app/js/taskManager.js");
+
+var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var errorAddField = $('.error-add');
+var addField = $('.add-field');
+
+var Utils = function () {
+    function Utils() {
+        _classCallCheck(this, Utils);
+    }
+
+    _createClass(Utils, [{
+        key: 'createNewTasks',
+        value: function createNewTasks(evnt) {
+            evnt.preventDefault();
+            clearField(errorAddField);
+            var taskName = $.trim(addField.val());
+            if (!taskName) {
+                errorAddField.html("Invalid value");
+            } else {
+                var taskId = new Date().valueOf() + '_' + taskName;
+                var taskDate = getDate();
+                addField.val('');
+                (0, _view.renderTask)(taskId, taskName, _constant.STATUS.DEFAULT, taskDate);
+                _taskManager.taskManager.create(taskId, taskName, _constant.STATUS.DEFAULT, taskDate);
+            }
+        }
+    }, {
+        key: 'deleteTask',
+        value: function deleteTask(id, container) {
+            container.remove();
+            _taskManager.taskManager.delete(id);
+        }
+    }, {
+        key: 'editTask',
+        value: function editTask(form, name) {
+            var labelTask = form.find('.edit-name-field').val(name);
+            _taskManager.taskManager.edit(form, name);
+        }
+    }, {
+        key: 'cancelTask',
+        value: function cancelTask(form) {
+            _taskManager.taskManager.cancel(form);
+        }
+    }, {
+        key: 'saveTask',
+        value: function saveTask(form, id, name) {
+            var newTaskName = $.trim(form.find('.edit-name-field').val());
+            var task = _taskManager.taskManager.get(id);
+            var labelTask = form.find('.name-field');
+
+            if (newTaskName != '') {
+                task.name = newTaskName;
+                labelTask.html(newTaskName);
+                task.dateEdit = getDate();
+                var dateEditArea = form.find('.date-edit');
+                var dateEditContent = 'last edited ' + task.dateEdit;
+
+                if (dateEditArea.length == 0) {
+                    form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
+                } else {
+                    dateEditArea.html(dateEditContent);
+                }
+            }
+            _taskManager.taskManager.save(form);
+        }
+    }]);
+
+    return Utils;
+}();
+
+;
+
+function getDate() {
+    var date = new Date();
+    var twoDigitMonth = date.getMonth() + '';
+    if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
+    var twoDigitDay = date.getDate() + '';
+    if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
+    var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+    return currentDate;
+}
 
 function clearField(field) {
     field.html('');
 }
 
-exports.createNewTasks = createNewTasks;
-exports.deleteTask = deleteTask;
+var utils = new Utils();
+
+exports.utils = utils;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
+/***/ "./app/js/view.js":
+/*!************************!*\
+  !*** ./app/js/view.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.renderTask = undefined;
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+var taskArea = $("#tasks-container");
+
+function renderTask(id, name, status, date, dateEdit) {
+    var newTask = $('<div class="tasks-wrap"></div>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.COMLETED) + '">\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    newTask.html(createForm);
+    taskArea.prepend(newTask);
+}
+
+exports.renderTask = renderTask;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),

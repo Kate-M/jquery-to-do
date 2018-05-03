@@ -1,8 +1,7 @@
-const $TASK_AREA = $(".tasks-container");
 const STATUS = {
-    default: 0,
-    processing: 1,
-    completed: 2
+    DEFAULT: 0,
+    PROCESSING: 1,
+    COMLETED: 2
 };
 
-export {$TASK_AREA, STATUS};
+export { STATUS };
