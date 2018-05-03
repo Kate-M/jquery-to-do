@@ -1,6 +1,8 @@
 import { STATUS } from './constant';
 import { taskManager } from './taskManager';
 import { renderTask } from './view';
+import { taskArea } from './view';
+
 
 let errorAddField = $('.error-add');
 let addField = $('.add-field');
@@ -67,8 +69,16 @@ class Utils {
         form.find('.btn-status-complete').attr('checked', status == STATUS.COMPLETED);
         form.find('.btn-status').attr('data-status', status);
     }
-};
 
+    filterTask(filterParam) {
+        taskArea.html('');
+        let filteredTasks = taskManager.filter(filterParam);
+        console.log(filteredTasks, filteredTasks.length);
+        if (filteredTasks.length == 0) {
+            taskArea.html('Nothing');
+        }
+    }
+}
 function getDate() {
     var date = new Date();
     var twoDigitMonth = date.getMonth() + '';

@@ -4,6 +4,8 @@
     align-items: stretch;
     flex-wrap: wrap;
     width: 100%;
+    position: relative;
+    z-index: 5;
     @media screen and (max-width: 767px) {
         display: none;
         position: absolute;

@@ -4,12 +4,16 @@ import { renderTask } from './view';
 import { buttonPosition } from './buttonPosition';
 import { utils } from './utils';
 
+let inFiltered;
+let filterMode;
+let inSearched;
+
 class TaskManager {
     constructor() {
         this.tasksList = [];
         console.log('taskmanager created');
     }
-    
+
     init() {
         this.parseDB();
         this.addEventsListeners();
@@ -33,6 +37,32 @@ class TaskManager {
         $('#add-task').on('click', utils.createNewTasks);
         $('#tasks-container').on('click', this.switchedTaskControls);
         $('.menu-btn').on('click', this.openMenuButton);
+        $('.filter-btn').on('click', this.openFilterButton);
+
+        $.each($('.filter-item'), (index, el) =>
+            $(el).on('click', this.switchedFilter)
+        );
+    }
+    switchedFilter(event) {
+        event.preventDefault();
+        let activeFilter = $(event.target).html();
+        $('.filter-btn').html(activeFilter);
+        $('.filter-task').removeClass('open');
+        let targetFilter = $(event.target).attr('data-filter');
+
+        switch (targetFilter) {
+            case 'filter-all':
+                utils.filterTask();
+                break;
+            case 'filter-in-progress':
+                utils.filterTask(STATUS.PROCESSING);
+                break;
+            case 'filter-complete':
+                utils.filterTask(STATUS.COMPLETED);
+                break;
+            default:
+                utils.filterTask();
+        }
     }
 
     switchedTaskControls(event) {
@@ -66,14 +96,19 @@ class TaskManager {
                 break;
             case 'status-complete-task':
                 utils.changeStatus(targetForm, targetTaskId, STATUS.COMPLETED);
-                break;        
+                break;
             default:
                 console.log('other');
                 break;
         }
     }
+
     openMenuButton() {
         $('.controls-task-main').toggleClass('open');
+    }
+
+    openFilterButton() {
+        $('.filter-task').toggleClass('open');
     }
 
     get(id) {
@@ -112,11 +147,10 @@ class TaskManager {
         this.tasksList = this.tasksList.filter(i => i.id != id);
         this.sendTaskInLocalDB(this.tasksList);
     }
-
+    
     status(form, id, statusValue) {
-        let currentTask = taskManager.get(id);
-        
-        if (currentTask.status == statusValue) {
+        let currentTask = this.get(id);
+        if(currentTask.status == statusValue) {
             currentTask.status = STATUS.DEFAULT;
         } else {
             currentTask.status = statusValue;
@@ -125,10 +159,27 @@ class TaskManager {
         return currentTask.status;
     }
 
+    filter(filterParam) {
+        filterMode = filterParam;
+        let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
+        if (!filterParam) {
+            $.each(filteredTasksList, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            inFiltered = null;
+            return filteredTasksList;
+        } else {
+            var filteredTasks = filteredTasksList.filter((el, index, array) => el.status == filterParam);
+            $.each(filteredTasks, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            inFiltered = filteredTasks;
+            return filteredTasks;
+        }
+        
+    }
+    
     sendTaskInLocalDB(tasksList) {
         let serialTasksList = JSON.stringify(tasksList);
         localStorage.setItem("tasksDB", serialTasksList);
     }
+
 }
 
 const taskManager = new TaskManager();

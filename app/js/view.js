@@ -1,5 +1,5 @@
 import { STATUS } from './constant';
-let taskArea = $("#tasks-container");
+export var taskArea = $("#tasks-container");
 
 function renderTask(id, name, status, date, dateEdit) {
     let newTask = $('<div class="tasks-wrap"></div>');
