@@ -188,6 +188,10 @@ var _utils = __webpack_require__(/*! ./utils */ "./app/js/utils.js");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var inFiltered = void 0;
+var filterMode = void 0;
+var inSearched = void 0;
+
 var TaskManager = function () {
     function TaskManager() {
         _classCallCheck(this, TaskManager);
@@ -220,9 +224,39 @@ var TaskManager = function () {
     }, {
         key: 'addEventsListeners',
         value: function addEventsListeners() {
+            var _this = this;
+
             $('#add-task').on('click', _utils.utils.createNewTasks);
             $('#tasks-container').on('click', this.switchedTaskControls);
             $('.menu-btn').on('click', this.openMenuButton);
+            $('.filter-btn').on('click', this.openFilterButton);
+
+            $.each($('.filter-item'), function (index, el) {
+                return $(el).on('click', _this.switchedFilter);
+            });
+        }
+    }, {
+        key: 'switchedFilter',
+        value: function switchedFilter(event) {
+            event.preventDefault();
+            var activeFilter = $(event.target).html();
+            $('.filter-btn').html(activeFilter);
+            $('.filter-task').removeClass('open');
+            var targetFilter = $(event.target).attr('data-filter');
+
+            switch (targetFilter) {
+                case 'filter-all':
+                    _utils.utils.filterTask();
+                    break;
+                case 'filter-in-progress':
+                    _utils.utils.filterTask(_constant.STATUS.PROCESSING);
+                    break;
+                case 'filter-complete':
+                    _utils.utils.filterTask(_constant.STATUS.COMPLETED);
+                    break;
+                default:
+                    _utils.utils.filterTask();
+            }
         }
     }, {
         key: 'switchedTaskControls',
@@ -263,6 +297,11 @@ var TaskManager = function () {
         key: 'openMenuButton',
         value: function openMenuButton() {
             $('.controls-task-main').toggleClass('open');
+        }
+    }, {
+        key: 'openFilterButton',
+        value: function openFilterButton() {
+            $('.filter-task').toggleClass('open');
         }
     }, {
         key: 'get',
@@ -314,8 +353,7 @@ var TaskManager = function () {
     }, {
         key: 'status',
         value: function status(form, id, statusValue) {
-            var currentTask = taskManager.get(id);
-
+            var currentTask = this.get(id);
             if (currentTask.status == statusValue) {
                 currentTask.status = _constant.STATUS.DEFAULT;
             } else {
@@ -323,6 +361,28 @@ var TaskManager = function () {
             }
             this.sendTaskInLocalDB(this.tasksList);
             return currentTask.status;
+        }
+    }, {
+        key: 'filter',
+        value: function filter(filterParam) {
+            filterMode = filterParam;
+            var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
+            if (!filterParam) {
+                $.each(filteredTasksList, function (index, el) {
+                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                });
+                inFiltered = null;
+                return filteredTasksList;
+            } else {
+                var filteredTasks = filteredTasksList.filter(function (el, index, array) {
+                    return el.status == filterParam;
+                });
+                $.each(filteredTasks, function (index, el) {
+                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                });
+                inFiltered = filteredTasks;
+                return filteredTasks;
+            }
         }
     }, {
         key: 'sendTaskInLocalDB',
@@ -437,12 +497,20 @@ var Utils = function () {
             form.find('.btn-status-complete').attr('checked', status == _constant.STATUS.COMPLETED);
             form.find('.btn-status').attr('data-status', status);
         }
+    }, {
+        key: 'filterTask',
+        value: function filterTask(filterParam) {
+            _view.taskArea.html('');
+            var filteredTasks = _taskManager.taskManager.filter(filterParam);
+            console.log(filteredTasks, filteredTasks.length);
+            if (filteredTasks.length == 0) {
+                _view.taskArea.html('Nothing');
+            }
+        }
     }]);
 
     return Utils;
 }();
-
-;
 
 function getDate() {
     var date = new Date();
@@ -478,11 +546,11 @@ exports.utils = utils;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.renderTask = undefined;
+exports.renderTask = exports.taskArea = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
-var taskArea = $("#tasks-container");
+var taskArea = exports.taskArea = $("#tasks-container");
 
 function renderTask(id, name, status, date, dateEdit) {
     var newTask = $('<div class="tasks-wrap"></div>');
