@@ -12,6 +12,7 @@ let errorAddField = $('.error-add');
 let searchField = $('.search-field');
 let errorSearchField = $('.error-search');
 let resetSearchButton = $('.reset-search');
+let finterBtn = $('.filter-btn');
 
 class TaskManager {
     constructor() {
@@ -22,6 +23,8 @@ class TaskManager {
         this.resetSearch = this.resetSearch.bind(this);
         this.switchedTaskControls = this.switchedTaskControls.bind(this);
         this.switchedFilter = this.switchedFilter.bind(this);
+        this.removeCompleted = this.removeCompleted.bind(this);
+        this.removeAll = this.removeAll.bind(this);
     }
 
     init() {
@@ -50,6 +53,8 @@ class TaskManager {
         $('#tasks-container').on('click', this.switchedTaskControls);
         $('.menu-btn').on('click', this.openMenuButton);
         $('.filter-btn').on('click', this.openFilterButton);
+        $('#btn-remove-completed').on('click', this.removeCompleted);
+        $('#btn-remove-all').on('click', this.removeAll);
         $.each($('.filter-item'), (index, el) =>
             $(el).on('click', this.switchedFilter)
         );
@@ -152,7 +157,9 @@ class TaskManager {
     }
 
     delete(id, container) {
-        container.remove();
+        if (container) {
+            container.remove();
+        }
         this.tasksList = this.tasksList.filter(i => i.id != id);
         this.sendTaskInLocalDB(this.tasksList);
     }
@@ -253,9 +260,28 @@ class TaskManager {
         this.filter(filterMode);
     }
 
+    removeAll(event) {
+        event.preventDefault();
+        utils.pasteInArea('');
+        $.each(this.tasksList, (index, el) => this.delete(el.id));
+        this.resetSearch(event);
+    }
+    removeCompleted(event) {
+        event.preventDefault();
+        let removetList = taskManager.tasksList.filter(el => el.status == STATUS.completed);
+        let check = $('.btn-status-complete');
+        $.each(check, (index, el) => {
+            if ($(el).attr('checked') == 'checked') {
+                let removerId = $(el).attr('data-id');
+                let removerForm = $(el).parents('form');
+                this.delete(removerId, removerForm);
+            }
+        });
+        this.resetSearch(event);
+    }
     clearFilter() {
-        this.filter()
-        $('.filter-btn').html('All');
+        this.filter();
+        finterBtn.html('All');
     }
 
     sendTaskInLocalDB(tasksList) {

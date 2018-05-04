@@ -196,6 +196,7 @@ var errorAddField = $('.error-add');
 var searchField = $('.search-field');
 var errorSearchField = $('.error-search');
 var resetSearchButton = $('.reset-search');
+var finterBtn = $('.filter-btn');
 
 var TaskManager = function () {
     function TaskManager() {
@@ -208,6 +209,8 @@ var TaskManager = function () {
         this.resetSearch = this.resetSearch.bind(this);
         this.switchedTaskControls = this.switchedTaskControls.bind(this);
         this.switchedFilter = this.switchedFilter.bind(this);
+        this.removeCompleted = this.removeCompleted.bind(this);
+        this.removeAll = this.removeAll.bind(this);
     }
 
     _createClass(TaskManager, [{
@@ -242,6 +245,8 @@ var TaskManager = function () {
             $('#tasks-container').on('click', this.switchedTaskControls);
             $('.menu-btn').on('click', this.openMenuButton);
             $('.filter-btn').on('click', this.openFilterButton);
+            $('#btn-remove-completed').on('click', this.removeCompleted);
+            $('#btn-remove-all').on('click', this.removeAll);
             $.each($('.filter-item'), function (index, el) {
                 return $(el).on('click', _this.switchedFilter);
             });
@@ -346,7 +351,9 @@ var TaskManager = function () {
     }, {
         key: 'delete',
         value: function _delete(id, container) {
-            container.remove();
+            if (container) {
+                container.remove();
+            }
             this.tasksList = this.tasksList.filter(function (i) {
                 return i.id != id;
             });
@@ -460,10 +467,41 @@ var TaskManager = function () {
             this.filter(filterMode);
         }
     }, {
+        key: 'removeAll',
+        value: function removeAll(event) {
+            var _this2 = this;
+
+            event.preventDefault();
+            _utils.utils.pasteInArea('');
+            $.each(this.tasksList, function (index, el) {
+                return _this2.delete(el.id);
+            });
+            this.resetSearch(event);
+        }
+    }, {
+        key: 'removeCompleted',
+        value: function removeCompleted(event) {
+            var _this3 = this;
+
+            event.preventDefault();
+            var removetList = taskManager.tasksList.filter(function (el) {
+                return el.status == _constant.STATUS.completed;
+            });
+            var check = $('.btn-status-complete');
+            $.each(check, function (index, el) {
+                if ($(el).attr('checked') == 'checked') {
+                    var removerId = $(el).attr('data-id');
+                    var removerForm = $(el).parents('form');
+                    _this3.delete(removerId, removerForm);
+                }
+            });
+            this.resetSearch(event);
+        }
+    }, {
         key: 'clearFilter',
         value: function clearFilter() {
             this.filter();
-            $('.filter-btn').html('All');
+            finterBtn.html('All');
         }
     }, {
         key: 'sendTaskInLocalDB',
@@ -576,7 +614,7 @@ var taskArea = exports.taskArea = $("#tasks-container");
 
 function renderTask(id, name, status, date, dateEdit) {
     var newTask = $('<div class="tasks-wrap"></div>');
-    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" ' + (status == _constant.STATUS.COMPLETED ? 'checked="checked"' : '') + '>\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
+    var createForm = $('<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <div class="task-content">\n                    <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" data-id="' + id + '" ' + (status == _constant.STATUS.COMPLETED ? 'checked="checked"' : '') + '>\n                    <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                    </div>\n                <input type="text" class="field edit-name-field" data-id="' + id + '">\n                <div class="task-info">\n                    <p class="date-area" data-date="12.05.2020">' + date + '  ' + (dateEdit ? '<span class="date-edit"> last edited ' + dateEdit + '</span>' : '') + '</p>\n                </div>\n                </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>');
     newTask.html(createForm);
     taskArea.prepend(newTask);
 }
