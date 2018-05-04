@@ -163,7 +163,6 @@ class TaskManager {
 
     filter(filterParam) {
         filterMode = filterParam;
-        console.log(filterMode);
         let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
         if (!filterParam) {
             $.each(filteredTasksList, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
@@ -179,9 +178,7 @@ class TaskManager {
     }
 
     clear() {
-        $.each(this.tasksList,
-            (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit)
-        );
+        utils.filterTask();
     }
 
     search(searchValue) {
@@ -198,8 +195,7 @@ class TaskManager {
         }
     }
     reset() {
-        console.log(filterMode);
-        // this.filter(filterMode);
+        utils.filterTask(filterMode);
         inSearched = null;
     }
 

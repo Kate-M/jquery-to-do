@@ -367,7 +367,6 @@ var TaskManager = function () {
         key: 'filter',
         value: function filter(filterParam) {
             filterMode = filterParam;
-            console.log(filterMode);
             var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
             if (!filterParam) {
                 $.each(filteredTasksList, function (index, el) {
@@ -389,9 +388,7 @@ var TaskManager = function () {
     }, {
         key: 'clear',
         value: function clear() {
-            $.each(this.tasksList, function (index, el) {
-                return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
-            });
+            _utils.utils.filterTask();
         }
     }, {
         key: 'search',
@@ -415,8 +412,7 @@ var TaskManager = function () {
     }, {
         key: 'reset',
         value: function reset() {
-            console.log(filterMode);
-            // this.filter(filterMode);
+            _utils.utils.filterTask(filterMode);
             inSearched = null;
         }
     }, {
@@ -544,6 +540,7 @@ var Utils = function () {
             if (filteredTasks.length == 0) {
                 _view.taskArea.html('Nothing');
             }
+            console.log(filterParam);
         }
     }, {
         key: 'searchTask',

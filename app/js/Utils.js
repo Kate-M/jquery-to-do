@@ -80,6 +80,7 @@ class Utils {
         if (filteredTasks.length == 0) {
             taskArea.html('Nothing');
         }
+        console.log(filterParam);
     }
 
     searchTask(event) {
