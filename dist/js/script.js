@@ -191,13 +191,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var inFiltered = void 0;
 var filterMode = void 0;
 var inSearched = void 0;
+var addField = $('.add-field');
+var errorAddField = $('.error-add');
+var searchField = $('.search-field');
+var errorSearchField = $('.error-search');
+var resetSearchButton = $('.reset-search');
 
 var TaskManager = function () {
     function TaskManager() {
         _classCallCheck(this, TaskManager);
 
         this.tasksList = [];
-        console.log('taskmanager created');
+        this.create = this.create.bind(this);
+        this.search = this.search.bind(this);
+        this.filter = this.filter.bind(this);
+        this.resetSearch = this.resetSearch.bind(this);
+        this.switchedTaskControls = this.switchedTaskControls.bind(this);
+        this.switchedFilter = this.switchedFilter.bind(this);
     }
 
     _createClass(TaskManager, [{
@@ -226,9 +236,9 @@ var TaskManager = function () {
         value: function addEventsListeners() {
             var _this = this;
 
-            $('#add-task').on('click', _utils.utils.createNewTasks);
-            $('.search-field').on('input', _utils.utils.searchTask);
-            $('#reset-search-btn').on('click', _utils.utils.resetSearchTask);
+            $('#add-task').on('click', this.create);
+            $('.search-field').on('input', this.search);
+            $('#reset-search-btn').on('click', this.resetSearch);
             $('#tasks-container').on('click', this.switchedTaskControls);
             $('.menu-btn').on('click', this.openMenuButton);
             $('.filter-btn').on('click', this.openFilterButton);
@@ -247,16 +257,16 @@ var TaskManager = function () {
 
             switch (targetFilter) {
                 case 'filter-all':
-                    _utils.utils.filterTask();
+                    this.filter();
                     break;
                 case 'filter-in-progress':
-                    _utils.utils.filterTask(_constant.STATUS.PROCESSING);
+                    this.filter(_constant.STATUS.PROCESSING);
                     break;
                 case 'filter-complete':
-                    _utils.utils.filterTask(_constant.STATUS.COMPLETED);
+                    this.filter(_constant.STATUS.COMPLETED);
                     break;
                 default:
-                    _utils.utils.filterTask();
+                    this.filter();
             }
         }
     }, {
@@ -272,25 +282,24 @@ var TaskManager = function () {
 
             switch (targetButton) {
                 case 'delete-task':
-                    _utils.utils.deleteTask(targetTaskId, targetContainer);
+                    this.delete(targetTaskId, targetContainer);
                     break;
                 case 'edit-task':
-                    _utils.utils.editTask(targetForm, targetTaskName);
+                    this.edit(targetForm, targetTaskName);
                     break;
                 case 'cancel-task':
-                    _utils.utils.cancelTask(targetForm);
+                    this.cancel(targetForm);
                     break;
                 case 'save-task':
-                    _utils.utils.saveTask(targetForm, targetTaskId, targetTaskName);
+                    this.save(targetForm, targetTaskId, targetTaskName);
                     break;
                 case 'status-task':
-                    _utils.utils.changeStatus(targetForm, targetTaskId, _constant.STATUS.PROCESSING);
+                    this.status(targetForm, targetTaskId, _constant.STATUS.PROCESSING);
                     break;
                 case 'status-complete-task':
-                    _utils.utils.changeStatus(targetForm, targetTaskId, _constant.STATUS.COMPLETED);
+                    this.status(targetForm, targetTaskId, _constant.STATUS.COMPLETED);
                     break;
                 default:
-                    console.log('other');
                     break;
             }
         }
@@ -313,23 +322,40 @@ var TaskManager = function () {
         }
     }, {
         key: 'create',
-        value: function create(id, name, status, date) {
-            this.add({
-                status: status,
-                id: id,
-                name: name,
-                date: date
-            });
+        value: function create(event) {
+            event.preventDefault();
+            this.clearFilter();
+            _utils.utils.clearField(errorAddField);
+            var taskName = $.trim(addField.val());
+            if (!taskName) {
+                _utils.utils.addError(errorAddField, "Invalid value");
+            } else {
+                var taskId = new Date().valueOf() + '_' + taskName;
+                var taskDate = _utils.utils.getDate();
+                _utils.utils.clearInput(addField);
+                (0, _view.renderTask)(taskId, taskName, _constant.STATUS.DEFAULT, taskDate);
+                this.tasksList.push({
+                    status: _constant.STATUS.DEFAULT,
+                    id: taskId,
+                    name: taskName,
+                    date: taskDate
+                });
+                this.sendTaskInLocalDB(this.tasksList);
+            }
         }
     }, {
-        key: 'add',
-        value: function add(item) {
-            this.tasksList.push(item);
+        key: 'delete',
+        value: function _delete(id, container) {
+            container.remove();
+            this.tasksList = this.tasksList.filter(function (i) {
+                return i.id != id;
+            });
             this.sendTaskInLocalDB(this.tasksList);
         }
     }, {
         key: 'edit',
         value: function edit(form, name) {
+            var labelTask = form.find('.edit-name-field').val(name);
             form.addClass('edit-mode');
         }
     }, {
@@ -339,16 +365,25 @@ var TaskManager = function () {
         }
     }, {
         key: 'save',
-        value: function save(form) {
+        value: function save(form, id, name) {
+            var newTaskName = $.trim(form.find('.edit-name-field').val());
+            var task = taskManager.get(id);
+            var labelTask = form.find('.name-field');
+
+            if (newTaskName != '') {
+                task.name = newTaskName;
+                labelTask.html(newTaskName);
+                task.dateEdit = _utils.utils.getDate();
+                var dateEditArea = form.find('.date-edit');
+                var dateEditContent = 'last edited ' + task.dateEdit;
+
+                if (dateEditArea.length == 0) {
+                    form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
+                } else {
+                    dateEditArea.html(dateEditContent);
+                }
+            }
             form.removeClass('edit-mode');
-            this.sendTaskInLocalDB(this.tasksList);
-        }
-    }, {
-        key: 'delete',
-        value: function _delete(id) {
-            this.tasksList = this.tasksList.filter(function (i) {
-                return i.id != id;
-            });
             this.sendTaskInLocalDB(this.tasksList);
         }
     }, {
@@ -361,41 +396,20 @@ var TaskManager = function () {
                 currentTask.status = statusValue;
             }
             this.sendTaskInLocalDB(this.tasksList);
-            return currentTask.status;
-        }
-    }, {
-        key: 'filter',
-        value: function filter(filterParam) {
-            filterMode = filterParam;
-            var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
-            if (!filterParam) {
-                $.each(filteredTasksList, function (index, el) {
-                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
-                });
-                inFiltered = null;
-                return filteredTasksList;
-            } else {
-                var filteredTasks = filteredTasksList.filter(function (el, index, array) {
-                    return el.status == filterParam;
-                });
-                $.each(filteredTasks, function (index, el) {
-                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
-                });
-                inFiltered = filteredTasks;
-                return filteredTasks;
-            }
-        }
-    }, {
-        key: 'clear',
-        value: function clear() {
-            _utils.utils.filterTask();
+            form.find('.btn-status-complete').attr('checked', currentTask.status == _constant.STATUS.COMPLETED);
+            form.find('.btn-status').attr('data-status', currentTask.status);
         }
     }, {
         key: 'search',
-        value: function search(searchValue) {
+        value: function search(event) {
+            event.preventDefault();
+            _utils.utils.clearField(errorSearchField);
             var serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
+            var searchValue = $.trim(searchField.val().toLowerCase());
 
             if (searchValue != '') {
+                _utils.utils.pasteInArea('');
+                resetSearchButton.addClass('open');
                 var patt = new RegExp(searchValue, "i");
                 var serchedTasks = serchedTasksList.filter(function (el, index, array) {
                     return el.name.search(patt) >= 0;
@@ -404,16 +418,52 @@ var TaskManager = function () {
                     return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                 });
                 inSearched = serchedTasks;
-                return serchedTasks;
+                if (serchedTasks.length == 0) {
+                    _utils.utils.pasteInArea('Nothing');
+                }
             } else {
+                _utils.utils.addError(errorSearchField, 'Empty field');
                 inSearched = null;
             }
         }
     }, {
-        key: 'reset',
-        value: function reset() {
-            _utils.utils.filterTask(filterMode);
+        key: 'filter',
+        value: function filter(filterParam) {
+            _utils.utils.pasteInArea('');
+            filterMode = filterParam;
+            var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
+            if (!filterParam) {
+                $.each(filteredTasksList, function (index, el) {
+                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                });
+                inFiltered = null;
+            } else {
+                var filteredTasks = filteredTasksList.filter(function (el, index, array) {
+                    return el.status == filterParam;
+                });
+                $.each(filteredTasks, function (index, el) {
+                    return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
+                });
+                inFiltered = filteredTasks;
+                if (filteredTasks.length == 0) {
+                    _utils.utils.pasteInArea('Nothing');
+                }
+            }
+        }
+    }, {
+        key: 'resetSearch',
+        value: function resetSearch(event) {
+            event.preventDefault();
+            resetSearchButton.removeClass('open');
+            _utils.utils.clearInput(searchField);
             inSearched = null;
+            this.filter(filterMode);
+        }
+    }, {
+        key: 'clearFilter',
+        value: function clearFilter() {
+            this.filter();
+            $('.filter-btn').html('All');
         }
     }, {
         key: 'sendTaskInLocalDB',
@@ -441,7 +491,7 @@ exports.taskManager = taskManager;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -458,144 +508,50 @@ var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var errorAddField = $('.error-add');
-var errorSearchField = $('.error-search');
-var addField = $('.add-field');
-var searchField = $('.search-field');
-var resetSearchButton = $('.reset-search');
-
 var Utils = function () {
     function Utils() {
         _classCallCheck(this, Utils);
     }
 
     _createClass(Utils, [{
-        key: 'createNewTasks',
-        value: function createNewTasks(evnt) {
-            evnt.preventDefault();
-            clearFilter();
-            clearField(errorAddField);
-            var taskName = $.trim(addField.val());
-            if (!taskName) {
-                errorAddField.html("Invalid value");
-            } else {
-                var taskId = new Date().valueOf() + '_' + taskName;
-                var taskDate = getDate();
-                addField.val('');
-                (0, _view.renderTask)(taskId, taskName, _constant.STATUS.DEFAULT, taskDate);
-                _taskManager.taskManager.create(taskId, taskName, _constant.STATUS.DEFAULT, taskDate);
-            }
+        key: 'getDate',
+        value: function getDate() {
+            var date = new Date();
+            var twoDigitMonth = date.getMonth() + '';
+            if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
+            var twoDigitDay = date.getDate() + '';
+            if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
+            var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+            return currentDate;
         }
     }, {
-        key: 'deleteTask',
-        value: function deleteTask(id, container) {
-            container.remove();
-            _taskManager.taskManager.delete(id);
+        key: 'clearInput',
+        value: function clearInput(field) {
+            field.val('');
         }
     }, {
-        key: 'editTask',
-        value: function editTask(form, name) {
-            var labelTask = form.find('.edit-name-field').val(name);
-            _taskManager.taskManager.edit(form, name);
+        key: 'clearField',
+        value: function clearField(field) {
+            field.html('');
         }
     }, {
-        key: 'cancelTask',
-        value: function cancelTask(form) {
-            _taskManager.taskManager.cancel(form);
+        key: 'pasteInArea',
+        value: function pasteInArea(message) {
+            _view.taskArea.html(message);
         }
     }, {
-        key: 'saveTask',
-        value: function saveTask(form, id, name) {
-            var newTaskName = $.trim(form.find('.edit-name-field').val());
-            var task = _taskManager.taskManager.get(id);
-            var labelTask = form.find('.name-field');
-
-            if (newTaskName != '') {
-                task.name = newTaskName;
-                labelTask.html(newTaskName);
-                task.dateEdit = getDate();
-                var dateEditArea = form.find('.date-edit');
-                var dateEditContent = 'last edited ' + task.dateEdit;
-
-                if (dateEditArea.length == 0) {
-                    form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
-                } else {
-                    dateEditArea.html(dateEditContent);
-                }
-            }
-            _taskManager.taskManager.save(form);
-        }
-    }, {
-        key: 'changeStatus',
-        value: function changeStatus(form, id, statusValue) {
-            var status = _taskManager.taskManager.status(form, id, statusValue);
-            form.find('.btn-status-complete').attr('checked', status == _constant.STATUS.COMPLETED);
-            form.find('.btn-status').attr('data-status', status);
-        }
-    }, {
-        key: 'filterTask',
-        value: function filterTask(filterParam) {
-            _view.taskArea.html('');
-            var filteredTasks = _taskManager.taskManager.filter(filterParam);
-            if (filteredTasks.length == 0) {
-                _view.taskArea.html('Nothing');
-            }
-            console.log(filterParam);
-        }
-    }, {
-        key: 'searchTask',
-        value: function searchTask(event) {
-            event.preventDefault();
-            clearField(errorSearchField);
-            var searchValue = $.trim(searchField.val().toLowerCase());
-
-            if (searchValue != '') {
-                _view.taskArea.html('');
-                resetSearchButton.addClass('open');
-                var serchedTasks = _taskManager.taskManager.search(searchValue);
-                if (serchedTasks.length == 0) {
-                    _view.taskArea.html('Nothing');
-                }
-            } else {
-                errorSearchField.html('Empty field');
-            }
-        }
-    }, {
-        key: 'resetSearchTask',
-        value: function resetSearchTask(evnt) {
-            evnt.preventDefault();
-            $('.search-field').value = '';
-            resetSearchButton.removeClass('open');
-            _taskManager.taskManager.reset();
+        key: 'addError',
+        value: function addError(field, message) {
+            field.html(message);
         }
     }]);
 
     return Utils;
 }();
 
-function getDate() {
-    var date = new Date();
-    var twoDigitMonth = date.getMonth() + '';
-    if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
-    var twoDigitDay = date.getDate() + '';
-    if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
-    var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
-    return currentDate;
-}
-
-function clearField(field) {
-    field.html('');
-}
-
-function clearFilter() {
-    _taskManager.taskManager.clear();
-    $('.filter-btn').html('All');
-}
-
 var utils = new Utils();
 
 exports.utils = utils;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
