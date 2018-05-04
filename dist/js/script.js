@@ -91,15 +91,17 @@ function buttonPosition() {
     var heightFooter = $('footer').outerHeight();
 
     startPositionButton();
+    $('.page').on('click', startPositionButton);
 
-    $('.tasks-container').bind("DOMSubtreeModified", startPositionButton);
-    $(window).scroll(appearanceButton);
+    // $(window).scroll(appearanceButton);
 
     function startPositionButton() {
         var heightMain = $('main').outerHeight();
         var commonHeight = Math.round(heightMain + heightHeader);
         if (windowHeight >= commonHeight) {
-            return $('section.controls-task-secondary').removeClass('fixed');
+            $('section.controls-task-secondary').removeClass('fixed');
+        } else {
+            $('section.controls-task-secondary').addClass('fixed');
         }
     };
 
