@@ -1,17 +1,16 @@
-import { STATUS } from './constant';
-import { taskManager } from './taskManager';
-import { renderTask } from './view';
 import { taskArea } from './view';
 
 class Utils {
-    
+
     getDate() {
-        var date = new Date();
-        var twoDigitMonth = date.getMonth() + '';
-        if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
-        var twoDigitDay = date.getDate() + '';
-        if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
-        var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+        const date = new Date();
+        let twoDigitMonth = `${date.getMonth()}`;
+        if (twoDigitMonth.length === 1) twoDigitMonth = `0${twoDigitMonth}`;
+        let twoDigitDay = `${date.getDate()}`;
+        if (twoDigitDay.length === 1) twoDigitDay = `0${twoDigitDay}`;
+        const currentDate = `${twoDigitDay}
+                            .${twoDigitMonth}
+                            .${date.getFullYear()}`;
         return currentDate;
     }
 
@@ -32,6 +31,6 @@ class Utils {
     }
 }
 
-var utils = new Utils();
+const utils = new Utils();
 
 export { utils };

@@ -88,12 +88,9 @@ exports.buttonPosition = buttonPosition;
 function buttonPosition() {
     var windowHeight = $(window).height();
     var heightHeader = $('header').outerHeight();
-    var heightFooter = $('footer').outerHeight();
 
     startPositionButton();
     $('.page').on('click', startPositionButton);
-
-    // $(window).scroll(appearanceButton);
 
     function startPositionButton() {
         var heightMain = $('main').outerHeight();
@@ -102,16 +99,6 @@ function buttonPosition() {
             $('section.controls-task-secondary').removeClass('fixed');
         } else {
             $('section.controls-task-secondary').addClass('fixed');
-        }
-    };
-
-    function appearanceButton() {
-        var scrollHeight = $(document).height() - heightFooter;
-        var scrollPosition = Math.round($(window).height() + $(window).scrollTop());
-        if (scrollPosition >= scrollHeight) {
-            return $('section.controls-task-secondary').removeClass('fixed');
-        } else {
-            return $('section.controls-task-secondary').addClass('fixed');
         }
     }
 }
@@ -180,8 +167,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
-var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
-
 var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
 
 var _buttonPosition = __webpack_require__(/*! ./buttonPosition */ "./app/js/buttonPosition.js");
@@ -204,6 +189,12 @@ var TaskManager = function () {
     function TaskManager() {
         _classCallCheck(this, TaskManager);
 
+        var instance = TaskManager.instance;
+        if (instance) {
+            return instance;
+        }
+
+        TaskManager.instance = this;
         this.tasksList = [];
         this.create = this.create.bind(this);
         this.search = this.search.bind(this);
@@ -225,9 +216,9 @@ var TaskManager = function () {
     }, {
         key: 'parseDB',
         value: function parseDB() {
-            if (typeof Storage !== "undefined") {
+            if (typeof Storage !== 'undefined') {
                 if (localStorage.getItem('tasksDB')) {
-                    this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                    this.tasksList = JSON.parse(localStorage.getItem('tasksDB'));
                     $.each(this.tasksList, function (index, el) {
                         return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                     });
@@ -323,7 +314,7 @@ var TaskManager = function () {
     }, {
         key: 'get',
         value: function get(id) {
-            return this.tasksList.filter(function (el, index, array) {
+            return this.tasksList.filter(function (el) {
                 return el.id == id;
             })[0];
         }
@@ -335,7 +326,7 @@ var TaskManager = function () {
             _utils.utils.clearField(errorAddField);
             var taskName = $.trim(addField.val());
             if (!taskName) {
-                _utils.utils.addError(errorAddField, "Invalid value");
+                _utils.utils.addError(errorAddField, 'Invalid value');
             } else {
                 var taskId = new Date().valueOf() + '_' + taskName;
                 var taskDate = _utils.utils.getDate();
@@ -364,7 +355,7 @@ var TaskManager = function () {
     }, {
         key: 'edit',
         value: function edit(form, name) {
-            var labelTask = form.find('.edit-name-field').val(name);
+            form.find('.edit-name-field').val(name);
             form.addClass('edit-mode');
         }
     }, {
@@ -374,19 +365,19 @@ var TaskManager = function () {
         }
     }, {
         key: 'save',
-        value: function save(form, id, name) {
+        value: function save(form, id) {
             var newTaskName = $.trim(form.find('.edit-name-field').val());
             var task = taskManager.get(id);
             var labelTask = form.find('.name-field');
 
-            if (newTaskName != '') {
+            if (newTaskName !== '') {
                 task.name = newTaskName;
                 labelTask.html(newTaskName);
                 task.dateEdit = _utils.utils.getDate();
                 var dateEditArea = form.find('.date-edit');
                 var dateEditContent = 'last edited ' + task.dateEdit;
 
-                if (dateEditArea.length == 0) {
+                if (dateEditArea.length === 0) {
                     form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
                 } else {
                     dateEditArea.html(dateEditContent);
@@ -399,13 +390,13 @@ var TaskManager = function () {
         key: 'status',
         value: function status(form, id, statusValue) {
             var currentTask = this.get(id);
-            if (currentTask.status == statusValue) {
+            if (currentTask.status === statusValue) {
                 currentTask.status = _constant.STATUS.DEFAULT;
             } else {
                 currentTask.status = statusValue;
             }
             this.sendTaskInLocalDB(this.tasksList);
-            form.find('.btn-status-complete').attr('checked', currentTask.status == _constant.STATUS.COMPLETED);
+            form.find('.btn-status-complete').attr('checked', currentTask.status === _constant.STATUS.COMPLETED);
             form.find('.btn-status').attr('data-status', currentTask.status);
         }
     }, {
@@ -413,21 +404,21 @@ var TaskManager = function () {
         value: function search(event) {
             event.preventDefault();
             _utils.utils.clearField(errorSearchField);
-            var serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
+            var serchedTasksList = inFiltered || taskManager.tasksList;
             var searchValue = $.trim(searchField.val().toLowerCase());
 
-            if (searchValue != '') {
+            if (searchValue !== '') {
                 _utils.utils.pasteInArea('');
                 resetSearchButton.addClass('open');
-                var patt = new RegExp(searchValue, "i");
-                var serchedTasks = serchedTasksList.filter(function (el, index, array) {
+                var patt = new RegExp(searchValue, 'i');
+                var serchedTasks = serchedTasksList.filter(function (el) {
                     return el.name.search(patt) >= 0;
                 });
                 $.each(serchedTasks, function (index, el) {
                     return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                 });
                 inSearched = serchedTasks;
-                if (serchedTasks.length == 0) {
+                if (serchedTasks.length === 0) {
                     _utils.utils.pasteInArea('Nothing');
                 }
             } else {
@@ -440,21 +431,21 @@ var TaskManager = function () {
         value: function filter(filterParam) {
             _utils.utils.pasteInArea('');
             filterMode = filterParam;
-            var filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
+            var filteredTasksList = inSearched || taskManager.tasksList;
             if (!filterParam) {
                 $.each(filteredTasksList, function (index, el) {
                     return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                 });
                 inFiltered = null;
             } else {
-                var filteredTasks = filteredTasksList.filter(function (el, index, array) {
-                    return el.status == filterParam;
+                var filteredTasks = filteredTasksList.filter(function (el) {
+                    return el.status === filterParam;
                 });
                 $.each(filteredTasks, function (index, el) {
                     return (0, _view.renderTask)(el.id, el.name, el.status, el.date, el.dateEdit);
                 });
                 inFiltered = filteredTasks;
-                if (filteredTasks.length == 0) {
+                if (filteredTasks.length === 0) {
                     _utils.utils.pasteInArea('Nothing');
                 }
             }
@@ -486,12 +477,9 @@ var TaskManager = function () {
             var _this3 = this;
 
             event.preventDefault();
-            var removetList = taskManager.tasksList.filter(function (el) {
-                return el.status == _constant.STATUS.completed;
-            });
             var check = $('.btn-status-complete');
             $.each(check, function (index, el) {
-                if ($(el).attr('checked') == 'checked') {
+                if ($(el).attr('checked') === 'checked') {
                     var removerId = $(el).attr('data-id');
                     var removerForm = $(el).parents('form');
                     _this3.delete(removerId, removerForm);
@@ -509,7 +497,7 @@ var TaskManager = function () {
         key: 'sendTaskInLocalDB',
         value: function sendTaskInLocalDB(tasksList) {
             var serialTasksList = JSON.stringify(tasksList);
-            localStorage.setItem("tasksDB", serialTasksList);
+            localStorage.setItem('tasksDB', serialTasksList);
         }
     }]);
 
@@ -540,10 +528,6 @@ exports.utils = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _taskManager = __webpack_require__(/*! ./taskManager */ "./app/js/taskManager.js");
-
 var _view = __webpack_require__(/*! ./view */ "./app/js/view.js");
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -557,11 +541,11 @@ var Utils = function () {
         key: 'getDate',
         value: function getDate() {
             var date = new Date();
-            var twoDigitMonth = date.getMonth() + '';
-            if (twoDigitMonth.length == 1) twoDigitMonth = '0' + twoDigitMonth;
-            var twoDigitDay = date.getDate() + '';
-            if (twoDigitDay.length == 1) twoDigitDay = '0' + twoDigitDay;
-            var currentDate = twoDigitDay + '.' + twoDigitMonth + '.' + date.getFullYear();
+            var twoDigitMonth = '' + date.getMonth();
+            if (twoDigitMonth.length === 1) twoDigitMonth = '0' + twoDigitMonth;
+            var twoDigitDay = '' + date.getDate();
+            if (twoDigitDay.length === 1) twoDigitDay = '0' + twoDigitDay;
+            var currentDate = twoDigitDay + '\n                            .' + twoDigitMonth + '\n                            .' + date.getFullYear();
             return currentDate;
         }
     }, {
