@@ -8,9 +8,12 @@
         bottom:60px;
     }
     &.fixed {
-        bottom:0;
+        bottom:72px;
         transition: all .1s;
         padding-bottom: 5px;
+        @media screen and (max-width: 767px) {
+            bottom:0;
+        }
     }
     .btn-group {
         align-items: flex-end;

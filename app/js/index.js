@@ -1,6 +1,6 @@
 import { taskManager } from './taskManager';
 
-$(document).ready(function () {
+$(document).ready(() => {
     taskManager.init();
 });
 

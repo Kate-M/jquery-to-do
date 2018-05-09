@@ -1,25 +1,30 @@
 import { STATUS } from './constant';
-import { startEvents } from './index';
 import { renderTask } from './view';
 import { buttonPosition } from './buttonPosition';
-import { utils } from './utils';
+import * as utils from './utils';
 
 let inFiltered;
 let filterMode;
 let inSearched;
-let addField = $('.add-field');
-let errorAddField = $('.error-add');
-let searchField = $('.search-field');
-let errorSearchField = $('.error-search');
-let resetSearchButton = $('.reset-search');
-let finterBtn = $('.filter-btn');
+const addField = $('.add-field');
+const errorAddField = $('.error-add');
+const searchField = $('.search-field');
+const errorSearchField = $('.error-search');
+const resetSearchButton = $('.reset-search');
+const finterBtn = $('.filter-btn');
 
 class TaskManager {
     constructor() {
+        const instance = TaskManager.instance;
+        if (instance) {
+            return instance;
+        }
+        
+        TaskManager.instance = this;
         this.tasksList = [];
-        this.create = this.create.bind(this);
-        this.search = this.search.bind(this);
-        this.filter = this.filter.bind(this);
+        this.createTask = this.createTask.bind(this);
+        this.searchTask = this.searchTask.bind(this);
+        this.filterTask = this.filterTask.bind(this);
         this.resetSearch = this.resetSearch.bind(this);
         this.switchedTaskControls = this.switchedTaskControls.bind(this);
         this.switchedFilter = this.switchedFilter.bind(this);
@@ -34,9 +39,9 @@ class TaskManager {
     }
 
     parseDB() {
-        if (typeof (Storage) !== "undefined") {
+        if (typeof (Storage) !== 'undefined') {
             if (localStorage.getItem('tasksDB')) {
-                this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                this.tasksList = JSON.parse(localStorage.getItem('tasksDB'));
                 $.each(this.tasksList,
                     (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit)
                 );
@@ -47,8 +52,8 @@ class TaskManager {
     }
 
     addEventsListeners() {
-        $('#add-task').on('click', this.create);
-        $('.search-field').on('input', this.search);
+        $('#add-task').on('click', this.createTask);
+        $('.search-field').on('input', this.searchTask);
         $('#reset-search-btn').on('click', this.resetSearch);
         $('#tasks-container').on('click', this.switchedTaskControls);
         $('.menu-btn').on('click', this.openMenuButton);
@@ -62,57 +67,57 @@ class TaskManager {
 
     switchedFilter(event) {
         event.preventDefault();
-        let activeFilter = $(event.target).html();
+        const activeFilter = $(event.target).html();
         $('.filter-btn').html(activeFilter);
         $('.filter-task').removeClass('open');
-        let targetFilter = $(event.target).attr('data-filter');
+        const targetFilter = $(event.target).attr('data-filter');
 
         switch (targetFilter) {
             case 'filter-all':
-                this.filter();
+                this.filterTask();
                 break;
             case 'filter-in-progress':
-                this.filter(STATUS.PROCESSING);
+                this.filterTask(STATUS.PROCESSING);
                 break;
             case 'filter-complete':
-                this.filter(STATUS.COMPLETED);
+                this.filterTask(STATUS.COMPLETED);
                 break;
             default:
-                this.filter();
+                this.filterTask();
         }
     }
 
     switchedTaskControls(event) {
         event.preventDefault();
-        let targetElement = $(event.target);
-        let targetButton = targetElement.attr('data-state');
-        let targetForm = targetElement.parents('form');
-        let targetContainer = targetForm.parent();
-        let targetTaskId = targetForm
+        const targetElement = $(event.target);
+        const targetButton = targetElement.attr('data-state');
+        const targetForm = targetElement.parents('form');
+        const targetContainer = targetForm.parent();
+        const targetTaskId = targetForm
             .find('.name-field')
             .attr('data-id');
-        let targetTaskName = targetForm
+        const targetTaskName = targetForm
             .find('.name-field')
             .html();
 
         switch (targetButton) {
             case 'delete-task':
-                this.delete(targetTaskId, targetContainer);
+                this.removeTask(targetTaskId, targetContainer);
                 break;
             case 'edit-task':
-                this.edit(targetForm, targetTaskName);
+                this.editTask(targetForm, targetTaskName);
                 break;
             case 'cancel-task':
-                this.cancel(targetForm);
+                this.cancelTask(targetForm);
                 break;
             case 'save-task':
-                this.save(targetForm, targetTaskId, targetTaskName);
+                this.saveTask(targetForm, targetTaskId, targetTaskName);
                 break;
             case 'status-task':
-                this.status(targetForm, targetTaskId, STATUS.PROCESSING);
+                this.statusTask(targetForm, targetTaskId, STATUS.PROCESSING);
                 break;
             case 'status-complete-task':
-                this.status(targetForm, targetTaskId, STATUS.COMPLETED);
+                this.statusTask(targetForm, targetTaskId, STATUS.COMPLETED);
                 break;
             default:
                 break;
@@ -127,21 +132,21 @@ class TaskManager {
         $('.filter-task').toggleClass('open');
     }
 
-    get(id) {
-        return this.tasksList.filter((el, index, array) =>
-            el.id == id)[0];
+    getTask(id) {
+        return this.tasksList.filter((el) =>
+            el.id === id)[0];
     }
 
-    create(event) {
+    createTask(event) {
         event.preventDefault();
         this.clearFilter();
         utils.clearField(errorAddField);
-        let taskName = $.trim(addField.val());
+        const taskName = $.trim(addField.val());
         if (!taskName) {
-            utils.addError(errorAddField, "Invalid value");
+            utils.addError(errorAddField, 'Invalid value');
         } else {
-            let taskId = new Date().valueOf() + '_' + taskName;
-            let taskDate = utils.getDate();
+            const taskId = `${new Date().valueOf()}_${taskName}`;
+            const taskDate = utils.getDate();
             utils.clearInput(addField);
             renderTask(taskId, taskName, STATUS.DEFAULT, taskDate);
             this.tasksList.push(
@@ -156,98 +161,97 @@ class TaskManager {
         }
     }
 
-    delete(id, container) {
+    removeTask(id, container) {
         if (container) {
             container.remove();
         }
-        this.tasksList = this.tasksList.filter(i => i.id != id);
+        this.tasksList = this.tasksList.filter(el => el.id !== id);
         this.sendTaskInLocalDB(this.tasksList);
     }
 
-    edit(form, name) {
-        let labelTask = form
-            .find('.edit-name-field')
-            .val(name);
+    editTask(form, name) {
+        form.find('.edit-name-field').val(name);
         form.addClass('edit-mode');
     }
 
-    cancel(form) {
+    cancelTask(form) {
         form.removeClass('edit-mode');
     }
 
-    save(form, id, name) {
+    saveTask(form, id) {
         let newTaskName = $.trim(form
             .find('.edit-name-field')
             .val());
-        let task = taskManager.get(id);
-        let labelTask = form
-            .find('.name-field');
-
-        if (newTaskName != '') {
+        let task = taskManager.getTask(id);
+        
+        if (newTaskName !== '') {
             task.name = newTaskName;
-            labelTask.html(newTaskName);
+            form.find('.name-field').html(newTaskName);
             task.dateEdit = utils.getDate();
             let dateEditArea = form.find('.date-edit');
-            let dateEditContent = 'last edited ' + task.dateEdit;
+            let dateEditContent = `last edited ${task.dateEdit}`;
 
-            if (dateEditArea.length == 0) {
-                form.find('.date-area').append('<span class="date-edit">' + dateEditContent + '</span>');
+            if (dateEditArea.length === 0) {
+                form.find('.date-area').append(`<span class="date-edit">${dateEditContent}</span>`);
             } else {
-                dateEditArea.html(dateEditContent)
+                dateEditArea.html(dateEditContent);
             }
         }
         form.removeClass('edit-mode');
         this.sendTaskInLocalDB(this.tasksList);
     }
 
-    status(form, id, statusValue) {
-        let currentTask = this.get(id);
-        if (currentTask.status == statusValue) {
+    statusTask(form, id, statusValue) {
+        let currentTask = this.getTask(id);
+        if (currentTask.status === statusValue) {
             currentTask.status = STATUS.DEFAULT;
         } else {
             currentTask.status = statusValue;
         }
         this.sendTaskInLocalDB(this.tasksList);
-        form.find('.btn-status-complete').attr('checked', currentTask.status == STATUS.COMPLETED);
+        form.find('.btn-status-complete').attr('checked', currentTask.status === STATUS.COMPLETED);
         form.find('.btn-status').attr('data-status', currentTask.status);
     }
 
-    search(event) {
+    searchTask(event) {
         event.preventDefault();
         utils.clearField(errorSearchField);
-        let serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
-        var searchValue = $.trim(searchField.val().toLowerCase());
-
-        if (searchValue != '') {
+        const serchedTasksList = inFiltered || taskManager.tasksList;
+        let searchValue = $.trim(searchField.val().toLowerCase());
+        console.log(this);
+        if (searchValue !== '') {
             utils.pasteInArea('');
             resetSearchButton.addClass('open');
-            let patt = new RegExp(searchValue, "i");
-            let serchedTasks = serchedTasksList.filter((el, index, array) => el.name.search(patt) >= 0);
-            $.each(serchedTasks, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            const patt = new RegExp(searchValue, 'i');
+            const serchedTasks = serchedTasksList.filter((el) => el.name.search(patt) >= 0);
+            $.each(serchedTasks, (index, el) =>
+            renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
             inSearched = serchedTasks;
-            if (serchedTasks.length == 0) {
+            if (serchedTasks.length === 0) {
                 utils.pasteInArea('Nothing');
             }
-        }
-        else {
-            utils.addError(errorSearchField, 'Empty field');
+        } else {
+            this.resetSearch(event);
             inSearched = null;
         }
     }
 
-    filter(filterParam) {
+    filterTask(filterParam) {
         utils.pasteInArea('');
         filterMode = filterParam;
-        let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
+        const filteredTasksList = inSearched || taskManager.tasksList;
         if (!filterParam) {
-            $.each(filteredTasksList, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            $.each(filteredTasksList, (index, el) =>
+            renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
             inFiltered = null;
         } else {
-            var filteredTasks = filteredTasksList.filter((el, index, array) => el.status == filterParam);
-            $.each(filteredTasks, (index, el) => renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
+            let filteredTasks = filteredTasksList.filter((el) =>
+            el.status === filterParam);
+            $.each(filteredTasks, (index, el) =>
+            renderTask(el.id, el.name, el.status, el.date, el.dateEdit));
             inFiltered = filteredTasks;
-            if (filteredTasks.length == 0) {
-                utils.pasteInArea('Nothing')
+            if (filteredTasks.length === 0) {
+                utils.pasteInArea('Nothing');
             }
         }
     }
@@ -257,40 +261,39 @@ class TaskManager {
         resetSearchButton.removeClass('open');
         utils.clearInput(searchField);
         inSearched = null;
-        this.filter(filterMode);
+        this.filterTask(filterMode);
     }
 
     removeAll(event) {
         event.preventDefault();
         utils.pasteInArea('');
-        $.each(this.tasksList, (index, el) => this.delete(el.id));
+        $.each(this.tasksList, (index, el) => this.removeTask(el.id));
         this.resetSearch(event);
     }
     removeCompleted(event) {
         event.preventDefault();
-        let removetList = taskManager.tasksList.filter(el => el.status == STATUS.completed);
-        let check = $('.btn-status-complete');
+        const check = $('.btn-status-complete');
         $.each(check, (index, el) => {
-            if ($(el).attr('checked') == 'checked') {
-                let removerId = $(el).attr('data-id');
-                let removerForm = $(el).parents('form');
-                this.delete(removerId, removerForm);
+            if ($(el).attr('checked') === 'checked') {
+                const removerId = $(el).attr('data-id');
+                const removerForm = $(el).parents('form');
+                this.removeTask(removerId, removerForm);
             }
         });
         this.resetSearch(event);
     }
     clearFilter() {
-        this.filter();
+        this.filterTask();
         finterBtn.html('All');
     }
 
     sendTaskInLocalDB(tasksList) {
-        let serialTasksList = JSON.stringify(tasksList);
-        localStorage.setItem("tasksDB", serialTasksList);
+        const serialTasksList = JSON.stringify(tasksList);
+        localStorage.setItem('tasksDB', serialTasksList);
     }
 
 }
 
-var taskManager = new TaskManager();
+const taskManager = new TaskManager();
 
-export { taskManager };
+export { taskManager };        
